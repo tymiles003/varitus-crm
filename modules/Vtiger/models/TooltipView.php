@@ -49,9 +49,6 @@ class Vtiger_TooltipView_Model extends Vtiger_DetailRecordStructure_Model {
 		foreach ($this->fields as $fieldModel) {
 			$fieldType = $fieldModel->getFieldDataType();
 			$fieldName = $fieldModel->get('name');
-            if($moduleName == 'Documents' && $fieldName == 'filename') {
-                continue;
-            }
 			
 			$fieldNames[] = $fieldName;
 			if ($fieldType == 'reference' || $fieldType == 'owner') {
@@ -93,16 +90,11 @@ class Vtiger_TooltipView_Model extends Vtiger_DetailRecordStructure_Model {
 			$tooltipFieldsList = $this->fields;
 			$recordModel = $this->getRecord();
 			$this->structuredValues = array('TOOLTIP_FIELDS' => array());
-            $moduleName = $this->module->getName();
 			if ($tooltipFieldsList) {
 				foreach ($tooltipFieldsList as $fieldModel) {
 					$fieldName = $fieldModel->get('name');
-                    if($moduleName == 'Documents' && $fieldName == 'filename') {
-                        continue;
-                    }
 					if($fieldModel->isViewableInDetailView()) {
-                        // tosafeHTML is to avoid XSS Vulnerability
-						$fieldModel->set('fieldvalue', Vtiger_Util_Helper::toSafeHTML($recordModel->get($fieldName)));
+						$fieldModel->set('fieldvalue', $recordModel->get($fieldName));
 						$this->structuredValues['TOOLTIP_FIELDS'][$fieldName] = $fieldModel;
 					}
 				}
@@ -119,13 +111,6 @@ class Vtiger_TooltipView_Model extends Vtiger_DetailRecordStructure_Model {
 	 * @return <Vtiger_DetailView_Model>
 	 */
 	public static function getInstance($moduleName,$recordId) {
-       if($moduleName=="Calendar"){
-            $recordModel = Vtiger_Record_Model::getInstanceById($recordId);
-			$activityType = $recordModel->getType();
-            if($activityType=="Events"){
-                $moduleName="Events";
-            }
-        }
 		$modelClassName = Vtiger_Loader::getComponentClassName('Model', 'TooltipView', $moduleName);
 		$instance = new $modelClassName();
 

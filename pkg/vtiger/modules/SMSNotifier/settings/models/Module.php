@@ -22,7 +22,9 @@ class Settings_SMSNotifier_Module_Model extends Settings_Vtiger_Module_Model {
 	public function getEditableFields() {
 		$fieldsList = array(
 				array('name' => 'providertype', 'label' => 'Provider',	'type' => 'picklist'),
-				array('name' => 'isactive',		'label' => 'Active',	'type' => 'radio')
+				array('name' => 'isactive',		'label' => 'Active',	'type' => 'radio'),
+				array('name' => 'username',		'label' => 'User Name',	'type' => 'text'),
+				array('name' => 'password',		'label' => 'Password',	'type' => 'password')
 		);
 
 		$fieldModelsList = array();

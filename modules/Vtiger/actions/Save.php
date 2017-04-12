@@ -14,32 +14,14 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 		$moduleName = $request->getModule();
 		$record = $request->get('record');
 
-		$actionName = ($record) ? 'EditView' : 'CreateView';
-		if(!Users_Privileges_Model::isPermitted($moduleName, $actionName, $record)) {
-			throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
-		}
-
 		if(!Users_Privileges_Model::isPermitted($moduleName, 'Save', $record)) {
-			throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
+			throw new AppException('LBL_PERMISSION_DENIED');
 		}
-
-		if ($record) {
-			$recordEntityName = getSalesEntityType($record);
-			if ($recordEntityName !== $moduleName) {
-				throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
-			}
-		}
-	}
-	
-	public function validateRequest(Vtiger_Request $request) {
-		return $request->validateWriteAccess();
 	}
 
 	public function process(Vtiger_Request $request) {
 		$recordModel = $this->saveRecord($request);
-		if ($request->get('returntab_label')){
-			$loadUrl = 'index.php?'.$request->getReturnURL();
-		} else if($request->get('relationOperation')) {
+		if($request->get('relationOperation')) {
 			$parentModuleName = $request->get('sourceModule');
 			$parentRecordId = $request->get('sourceRecord');
 			$parentRecordModel = Vtiger_Record_Model::getInstanceById($parentRecordId, $parentModuleName);
@@ -47,14 +29,8 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 			$loadUrl = $parentRecordModel->getDetailViewUrl();
 		} else if ($request->get('returnToList')) {
 			$loadUrl = $recordModel->getModule()->getListViewUrl();
-		} else if ($request->get('returnmodule') && $request->get('returnview')) {
-			$loadUrl = 'index.php?'.$request->getReturnURL();
 		} else {
 			$loadUrl = $recordModel->getDetailViewUrl();
-		}
-		$appName = $request->get('appName');
-		if(strlen($appName) > 0){
-			$loadUrl = $loadUrl.$appName;
 		}
 		header("Location: $loadUrl");
 	}
@@ -66,12 +42,6 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 	 */
 	public function saveRecord($request) {
 		$recordModel = $this->getRecordModelFromRequest($request);
-        if($request->get('imgDeleted')) {
-            $imageIds = $request->get('imageid');
-            foreach($imageIds as $imageId) {
-                $status = $recordModel->deleteImage($imageId);
-            }
-        }
 		$recordModel->save();
 		if($request->get('relationOperation')) {
 			$parentModuleName = $request->get('sourceModule');
@@ -79,14 +49,16 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 			$parentRecordId = $request->get('sourceRecord');
 			$relatedModule = $recordModel->getModule();
 			$relatedRecordId = $recordModel->getId();
-			if($relatedModule->getName() == 'Events'){
-				$relatedModule = Vtiger_Module_Model::getInstance('Calendar');
-			}
 
 			$relationModel = Vtiger_Relation_Model::getInstance($parentModuleModel, $relatedModule);
 			$relationModel->addRelation($parentRecordId, $relatedRecordId);
 		}
-        $this->savedRecordId = $recordModel->getId();
+        if($request->get('imgDeleted')) {
+            $imageIds = $request->get('imageid');
+            foreach($imageIds as $imageId) {
+                $status = $recordModel->deleteImage($imageId);
+            }
+        }
 		return $recordModel;
 	}
 
@@ -104,10 +76,12 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 
 		if(!empty($recordId)) {
 			$recordModel = Vtiger_Record_Model::getInstanceById($recordId, $moduleName);
+			$modelData = $recordModel->getData();
 			$recordModel->set('id', $recordId);
 			$recordModel->set('mode', 'edit');
 		} else {
 			$recordModel = Vtiger_Record_Model::getCleanInstance($moduleName);
+			$modelData = $recordModel->getData();
 			$recordModel->set('mode', '');
 		}
 
@@ -119,7 +93,7 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 				$fieldValue = Vtiger_Time_UIType::getTimeValueWithSeconds($fieldValue);
 			}
 			if($fieldValue !== null) {
-				if(!is_array($fieldValue) && $fieldDataType != 'currency') {
+				if(!is_array($fieldValue)) {
 					$fieldValue = trim($fieldValue);
 				}
 				$recordModel->set($fieldName, $fieldValue);
@@ -127,4 +101,8 @@ class Vtiger_Save_Action extends Vtiger_Action_Controller {
 		}
 		return $recordModel;
 	}
+        
+        public function validateRequest(Vtiger_Request $request) { 
+            return $request->validateWriteAccess(); 
+        } 
 }

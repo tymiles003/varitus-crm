@@ -21,9 +21,7 @@ $languageStrings = array(
 	'LTFAQ'                        => 'Yakın SSS'                  , 
 	'UA'                           => 'Gelecek İşler'             , 
 	'PA'                           => 'Bekleyen İşler'            , 
-        'Home'                         => 'Dashboard'                 ,
-
-  'LBL_SAVE_ORDER' => 'Kaydet Emri',
-  'LBL_ADD_NEW_DASHBOARD' => 'Yeni bir pano Ekle ',
-	'LBL_MAX_CHARACTERS_ALLOWED_DASHBOARD' => 'Maksimum 30 karakter pano adı için izin verilir.',
+        'Home'                         => 'Ana Sayfa'                 ,
+        'Key Metrics'                  => 'Anahtar Ölçütleri',
+	'Tag Cloud'                    => 'Etiket Bulutu',
 );

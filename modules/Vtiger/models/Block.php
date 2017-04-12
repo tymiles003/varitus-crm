@@ -104,12 +104,11 @@ class Vtiger_Block_Model extends Vtiger_Block {
 	 * @return <array> - list of Vtiger_Block_Model
 	 */
 	public static function getAllForModule($moduleModel) {
-		$blockObjects = Vtiger_Cache::get('ModuleBlocks',$moduleModel->getId());
+		$blockObjects = Vtiger_Cache::get('ModuleBlock',$moduleModel->getName());
         
         if(!$blockObjects){
             $blockObjects = parent::getAllForModule($moduleModel);
-            if($blockObjects)
-                Vtiger_Cache::set('ModuleBlocks',$moduleModel->getId(),$blockObjects);
+            Vtiger_Cache::set('ModuleBlock',$moduleModel->getName(),$blockObjects);
         }
         $blockModelList = array();
 
@@ -142,7 +141,7 @@ class Vtiger_Block_Model extends Vtiger_Block {
 		return $blockModel;
 	}
     
-    public static function updateSequenceNumber($sequenceList, $moduleName = false) {
+    public static function updateSequenceNumber($sequenceList) {
         $db = PearDatabase::getInstance();
         $query = 'UPDATE vtiger_blocks SET sequence = CASE blockid ';
         foreach ($sequenceList as $blockId => $sequence){
@@ -151,13 +150,6 @@ class Vtiger_Block_Model extends Vtiger_Block {
         $query .=' END ';
         $query .= ' WHERE blockid IN ('.generateQuestionMarks($sequenceList).')';
         $db->pquery($query, array_keys($sequenceList));
-        
-        // To clear cache
-        if($moduleName){
-            $moduleInstance = Vtiger_Module_Model::getInstance($moduleName);
-            Vtiger_Cache::flushModuleBlocksCache($moduleInstance);
-        }
-        // End
     }
     
     public static function checkFieldsExists($blockId) {
@@ -175,11 +167,6 @@ class Vtiger_Block_Model extends Vtiger_Block {
 		$db = PearDatabase::getInstance();
 		$query = 'UPDATE vtiger_blocks SET sequence=sequence+1 WHERE sequence > ? and tabid=?';
 		$result = $db->pquery($query, array($fromSequence,$sourceModuleTabId));
-        
-        // To clear Cache
-        $moduleModel = Vtiger_Module_Model::getInstance($sourceModuleTabId);
-        Vtiger_Cache::flushModuleBlocksCache($moduleModel);
-        // End
 	}
     
     public static function getAllBlockSequenceList($moduleTabId) {

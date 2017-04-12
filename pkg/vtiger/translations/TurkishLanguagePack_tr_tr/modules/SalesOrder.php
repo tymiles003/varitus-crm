@@ -8,7 +8,6 @@
  * All Rights Reserved.
  ************************************************************************************/
 $languageStrings = array(
-    'SalesOrder'                   => 'Satış Siparişleri'           , 
 	'SINGLE_SalesOrder'            => 'Satış Siparişi'           , 
 	'LBL_EXPORT_TO_PDF'            => 'PDF Olarak Aktar'            , 
 	'LBL_SEND_MAIL_PDF'            => 'Send Email with PDF'         , // TODO: Review
@@ -23,7 +22,8 @@ $languageStrings = array(
 	'Sales Commission'             => 'Satış Komisyonu'           , 
 	'Purchase Order'               => 'Satınalma Siparişi'        , 
 	'Vendor Terms'                 => 'Tedarikçi Şartları'       , 
-	'Pending'                      => 'Bekliyor'                    , 
+	'Pending'                      => 'Bekliyor'                    ,
+        'Recurring Invoive Information'=>'Fatura Bilgileri Tekrarlanan',
 	'Enable Recurring'             => 'Tekrarla'                    , 
 	'Frequency'                    => 'Sıklık'                    , 
 	'Start Period'                 => 'Başlangıç Dönemi'        , 
@@ -34,10 +34,12 @@ $languageStrings = array(
 	'AutoCreated'                  => 'AutoCreated'                 , 
 	'Sent'                         => 'Sent'                        , 
 	'Credit Invoice'               => 'Credit Invoice'              , 
-	'Paid'                         => 'Paid'                        , 
-
-  'LBL_THIS' => 'Bu',
-  'LBL_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_OR_REPLACE_THIS_ITEM' => 'sistem silinmiş.veya bu öğeyi kaldırmak yerine lütfen ',
-  'LBL_THIS_LINE_ITEM_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_THIS_LINE_ITEM' => 'Bu satır öğesi sistemi,lütfen bu satırı Kaldır öğeler silinir ',
-
+	'Paid'                         => 'Paid'                        ,
+    'Daily'=>'Günlük',
+    'Monthly'=>'Aylık',
+    'Quarterly'=>'Üç aylık',
+    'Yearly'=>'Yıllık',
+    'Net 30 days'=>'Net 30 gün',
+    'Net 45 days'=>'Net 45 gün',
+    'Net 60 days'=>'Net 60 gün',
 );

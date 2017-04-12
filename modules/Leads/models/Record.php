@@ -59,7 +59,7 @@ class Leads_Record_Model extends Vtiger_Record_Model {
 		$privilegeModel = Users_Privileges_Model::getCurrentUserPrivilegesModel();
 		$moduleName = 'Accounts';
 
-		if(!Users_Privileges_Model::isPermitted($moduleName, 'CreateView')) {
+		if(!Users_Privileges_Model::isPermitted($moduleName, 'EditView')) {
 			return;
 		}
 
@@ -75,24 +75,16 @@ class Leads_Record_Model extends Vtiger_Record_Model {
                         unset($complusoryFields[$keyIndex]);
                     }
 					$leadMappedField = $this->getConvertLeadMappedField($fieldName, $moduleName);
-                    if($this->get($leadMappedField)) {
-                        $fieldModel->set('fieldvalue', $this->get($leadMappedField));
-                    } else {
-                        $fieldModel->set('fieldvalue', $fieldModel->getDefaultFieldValue());
-                    } 
+					$fieldModel->set('fieldvalue', $this->get($leadMappedField));
 					$accountsFields[] = $fieldModel;
 				}
 			}
             foreach($complusoryFields as $complusoryField) {
                 $fieldModel = Vtiger_Field_Model::getInstance($complusoryField, $moduleModel);
-				if($fieldModel->getPermissions('readwrite') && $fieldModel->isEditable()) {
+				if($fieldModel->getPermissions('readwrite')) {
                     $industryFieldModel = $moduleModel->getField($complusoryField);
                     $industryLeadMappedField = $this->getConvertLeadMappedField($complusoryField, $moduleName);
-                    if($this->get($industryLeadMappedField)) {
-                        $industryFieldModel->set('fieldvalue', $this->get($industryLeadMappedField));
-                    } else {
-                        $industryFieldModel->set('fieldvalue', $industryFieldModel->getDefaultFieldValue());
-                    }
+                    $industryFieldModel->set('fieldvalue', $this->get($industryLeadMappedField));
                     $accountsFields[] = $industryFieldModel;
                 }
             }
@@ -109,7 +101,7 @@ class Leads_Record_Model extends Vtiger_Record_Model {
 		$privilegeModel = Users_Privileges_Model::getCurrentUserPrivilegesModel();
 		$moduleName = 'Contacts';
 
-		if(!Users_Privileges_Model::isPermitted($moduleName, 'CreateView')) {
+		if(!Users_Privileges_Model::isPermitted($moduleName, 'EditView')) {
 			return;
 		}
 
@@ -129,25 +121,17 @@ class Leads_Record_Model extends Vtiger_Record_Model {
                     if ($fieldName === 'account_id') {
                         $fieldValue = $this->get('company');
                     }
-                    if($fieldValue) {
-                        $fieldModel->set('fieldvalue', $fieldValue);
-                    } else {
-                        $fieldModel->set('fieldvalue', $fieldModel->getDefaultFieldValue());
-                    }
+                    $fieldModel->set('fieldvalue', $fieldValue);
                     $contactsFields[] = $fieldModel;
                 }
             }
 
 			foreach($complusoryFields as $complusoryField) {
                 $fieldModel = Vtiger_Field_Model::getInstance($complusoryField, $moduleModel);
-				if($fieldModel->getPermissions('readwrite') && $fieldModel->isEditable()) {
+				if($fieldModel->getPermissions('readwrite')) {
 					$leadMappedField = $this->getConvertLeadMappedField($complusoryField, $moduleName);
 					$fieldModel = $moduleModel->getField($complusoryField);
-                    if($this->get($leadMappedField)) {
-                        $fieldModel->set('fieldvalue', $this->get($leadMappedField));
-                    } else {
-                        $fieldModel->set('fieldvalue', $fieldModel->getDefaultFieldValue());
-                    }
+					$fieldModel->set('fieldvalue', $this->get($leadMappedField));
 					$contactsFields[] = $fieldModel;
 				}
 			}
@@ -164,7 +148,7 @@ class Leads_Record_Model extends Vtiger_Record_Model {
 		$privilegeModel = Users_Privileges_Model::getCurrentUserPrivilegesModel();
 		$moduleName = 'Potentials';
 
-		if(!Users_Privileges_Model::isPermitted($moduleName, 'CreateView')) {
+		if(!Users_Privileges_Model::isPermitted($moduleName, 'EditView')) {
 			return;
 		}
 
@@ -181,24 +165,16 @@ class Leads_Record_Model extends Vtiger_Record_Model {
                         unset($complusoryFields[$keyIndex]);
                     }
 					$leadMappedField = $this->getConvertLeadMappedField($fieldName, $moduleName);
-                    if($this->get($leadMappedField)) { 
-                        $fieldModel->set('fieldvalue', $this->get($leadMappedField));
-                    } else {
-                        $fieldModel->set('fieldvalue', $fieldModel->getDefaultFieldValue());
-                    }
+					$fieldModel->set('fieldvalue', $this->get($leadMappedField));
 					$potentialFields[] = $fieldModel;
 				}
 			}
             foreach($complusoryFields as $complusoryField) {
                 $fieldModel = Vtiger_Field_Model::getInstance($complusoryField, $moduleModel);
-                if($fieldModel->getPermissions('readwrite') && $fieldModel->isEditable()) {
+                if($fieldModel->getPermissions('readwrite')) {
                     $fieldModel = $moduleModel->getField($complusoryField);
                     $amountLeadMappedField = $this->getConvertLeadMappedField($complusoryField, $moduleName);
-                    if($this->get($amountLeadMappedField)) {
-                        $fieldModel->set('fieldvalue', $this->get($amountLeadMappedField));
-                    } else {
-                        $fieldModel->set('fieldvalue', $fieldModel->getDefaultFieldValue());
-                    }
+                    $fieldModel->set('fieldvalue', $this->get($amountLeadMappedField));
                     $potentialFields[] = $fieldModel;
                 }
             }

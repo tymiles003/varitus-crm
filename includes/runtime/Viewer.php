@@ -12,7 +12,7 @@ vimport ('~/libraries/Smarty/libs/SmartyBC.class.php');
 
 class Vtiger_Viewer extends SmartyBC {
 
-	const DEFAULTLAYOUT = 'v7';
+	const DEFAULTLAYOUT = 'vlayout';
 	const DEFAULTTHEME  = 'softed';
 	static $currentLayout;
 	
@@ -48,7 +48,16 @@ class Vtiger_Viewer extends SmartyBC {
 			$templatesDir = $THISDIR . '/../../layouts/'.$media;
 			$compileDir = $THISDIR . '/../../test/templates_c/'.$media;
 		}
-		if(!$templatesDir || !file_exists($templatesDir)) {
+		global $default_layout;
+          $checkforlayout = file_exists($THISDIR . '/../../layouts/'.$default_layout) ;
+          if($default_layout && $checkforlayout )
+        {
+            self::$currentLayout = $default_layout;
+			$templatesDir = $THISDIR . '/../../layouts/'.$default_layout;
+			$compileDir = $THISDIR . '/../../test/templates_c/'.$default_layout;
+            
+        }
+       else  if(empty($templatesDir) || !file_exists($templatesDir)) {
 			self::$currentLayout = self::getDefaultLayoutName();
 			$templatesDir = $THISDIR . '/../../layouts/'.self::getDefaultLayoutName();
 			$compileDir = $THISDIR . '/../../test/templates_c/'.self::getDefaultLayoutName();
@@ -103,7 +112,7 @@ class Vtiger_Viewer extends SmartyBC {
 	 * @return <String> - Default Layout Name
 	 */
 	public static function getDefaultLayoutName(){
-        return self::DEFAULTLAYOUT;
+		return self::DEFAULTLAYOUT;
 	}
 
 	/**
@@ -210,7 +219,6 @@ function vresource_url($url) {
     }
     return $url;
 }
-
 function getPurifiedSmartyParameters($param){
     return htmlentities($_REQUEST[$param]);
 }

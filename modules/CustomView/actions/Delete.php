@@ -17,16 +17,10 @@ class CustomView_Delete_Action extends Vtiger_Action_Controller {
 		$customViewModel->delete();
 
 		$listViewUrl = $moduleModel->getListViewUrl();
-		if ($request->isAjax()) {
-			$response = new Vtiger_Response();
-			$response->setResult(array('success' => true));
-			$response->emit();
-		} else {
-			header("Location: $listViewUrl");
-		}
+		header("Location: $listViewUrl");
 	}
-
-	public function validateRequest(Vtiger_Request $request) {
-		$request->validateWriteAccess();
-	}
+    
+    public function validateRequest(Vtiger_Request $request) {
+        $request->validateWriteAccess();
+    }
 }

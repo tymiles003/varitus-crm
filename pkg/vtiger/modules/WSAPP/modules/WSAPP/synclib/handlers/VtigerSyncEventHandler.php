@@ -43,10 +43,7 @@ class WSAPP_VtigerSyncEventHandler extends SyncHandler{
         $nativeForamtElementList['created'] = $this->syncToNativeFormat($values['created']);
         $nativeForamtElementList['updated'] = $this->syncToNativeFormat($values['updated']);
 		$nativeForamtElementList['deleted'] = $this->convertedDeletedRecordToNativeFormat($values['deleted']);
-		if (array_key_exists('skipped', $nativeForamtElementList)) {
-			$nativeForamtElementList['skipped'] = $this->convertSkippedRecordsToNativeFormat($values['skipped']);
-		}
-		return $nativeForamtElementList;
+        return $nativeForamtElementList;
 	 }
 
 	 public function map($olMapElement,$user){
@@ -96,16 +93,6 @@ class WSAPP_VtigerSyncEventHandler extends SyncHandler{
              }
 		 }
 	 }
-
-	 public function convertSkippedRecordsToNativeFormat($skippedRecords) {
-		$nativeSkippedRecordFormat = array();
-		foreach ($skippedRecords as $skippedRecord) {
-			$skippedRecordResponse = $skippedRecord;
-			$skippedRecordResponse['_syncidentificationkey'] = $skippedRecord['record']['_syncidentificationkey'];
-			$nativeSkippedRecordFormat[] = $skippedRecordResponse;
-		}
-		return $nativeSkippedRecordFormat;
-	}
 }
 ?>
 

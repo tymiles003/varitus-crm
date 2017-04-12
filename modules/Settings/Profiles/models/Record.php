@@ -190,7 +190,6 @@ class Settings_Profiles_Record_Model extends Settings_Vtiger_Record_Model {
 		if(!$this->hasModuleFieldPermission($module, $field)) {
 			return self::PROFILE_FIELD_INACTIVE;
 		} elseif($this->hasModuleFieldWritePermission($module, $field)) {
-			// for line item fields as well, we should send read write 
 			return self::PROFILE_FIELD_READWRITE;
 		} else {
 			return self::PROFILE_FIELD_READONLY;
@@ -200,7 +199,7 @@ class Settings_Profiles_Record_Model extends Settings_Vtiger_Record_Model {
 	public function isModuleFieldLocked($module, $field) {
 		$fieldModel = $this->getProfileTabFieldModel($module, $field);
         if(!$fieldModel->isEditable() || $fieldModel->isMandatory()
-				|| in_array($fieldModel->get('uitype'),self::$fieldLockedUiTypes) || $fieldModel->hasCustomLock()) {
+				|| in_array($fieldModel->get('uitype'),self::$fieldLockedUiTypes)) {
 			return true;
 		}
 		return false;
@@ -516,28 +515,17 @@ class Settings_Profiles_Record_Model extends Settings_Vtiger_Record_Model {
 						$actionPermissions[$actionId] = $actionPermissions[$actionId];
 					}
 				}
-                
+
 				//Dividing on actions
 				$actionsIdsList = $utilityIdsList = array();
 				foreach($actionPermissions as $actionId => $permission) {
 					if(isset(Vtiger_Action_Model::$standardActions[$actionId])) {
-                        if($moduleModel->isUtilityActionEnabled() && !isset($permission)) {
-                            $actionsIdsList[$actionId] = 'on'; // permission for non entity module should be true
-                        } else {
-                            $actionsIdsList[$actionId] = $permission;
-                        }
+						$actionsIdsList[$actionId] = $permission;
 					} else {
 						$utilityIdsList[$actionId] = $permission;
 					}
 				}
-                
-                $utilityActions = $moduleModel->getUtilityActions();
-                foreach ($utilityActions as $utilityActionId => $utilityActionName) {
-                    if(!isset($utilityIdsList[$utilityActionId])) {
-                        $utilityIdsList[$utilityActionId] = 'off';
-                    }
-                }
-                
+
 				//Update process
 				if ($profileActionPermissions) {
 					//Standard permissions
@@ -555,7 +543,12 @@ class Settings_Profiles_Record_Model extends Settings_Vtiger_Record_Model {
 					if ($actionsIdsList) {
 						$db->pquery($actionsUpdateQuery, array($profileId, $tabId));
 					}
-                    
+					
+					foreach (Vtiger_Action_Model::$utilityActions as $utilityActionId => $utilityActionName) {
+						if(!isset($utilityIdsList[$utilityActionId])) {
+							$utilityIdsList[$utilityActionId] = 'off';
+						}
+					}
 					//Utility permissions
 					$utilityUpdateQuery = 'UPDATE vtiger_profile2utility SET permission = CASE ';
 					foreach($utilityIdsList as $actionId => $permission) {
@@ -861,16 +854,15 @@ class Settings_Profiles_Record_Model extends Settings_Vtiger_Record_Model {
 			$moduleFields = $userModuleModel->getFields();
 
 			$userAccessbleFields = array();
-			$skipFields = array(115,116,31,32);
-			$allowedFields = array("roleid","currency_id","reports_to_id");
+			$skipFields = array(98,115,116,31,32);
 			foreach ($moduleFields as $fieldName => $fieldModel) {
-				if(in_array($fieldName,$allowedFields) || $fieldModel->getFieldDataType() == 'string' || $fieldModel->getFieldDataType() == 'email' || $fieldModel->getFieldDataType() == 'phone') {
+				if($fieldModel->getFieldDataType() == 'string' || $fieldModel->getFieldDataType() == 'email' || $fieldModel->getFieldDataType() == 'phone') {
 					if(!in_array($fieldModel->get('uitype'), $skipFields) && $fieldName != 'asterisk_extension'){
 						$userAccessbleFields[$fieldModel->get('id')] .= $fieldName;
 					}
 				}
 			}
-            
+
 			//Added user fields into vtiger_profile2field and vtiger_def_org_field
 			//We are using this field information in Email Templates.
 			foreach ($userAccessbleFields as $fieldId => $fieldName) {

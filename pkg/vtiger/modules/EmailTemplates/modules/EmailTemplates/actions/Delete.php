@@ -25,14 +25,12 @@ class EmailTemplates_Delete_Action extends Vtiger_Delete_Action {
 		$recordModel->delete($recordId);
 
 		$listViewUrl = $moduleModel->getListViewUrl();
-		$response = new Vtiger_Response();
-		if($recordModel->isSystemTemplate()) {
-			$response->setError('502', vtranslate('LBL_NO_PERMISSIONS_TO_DELETE_SYSTEM_TEMPLATE', $moduleName));
-		} else if($ajaxDelete) {
+		if($ajaxDelete) {
+			$response = new Vtiger_Response();
 			$response->setResult($listViewUrl);
+			return $response;
 		} else {
 			header("Location: $listViewUrl");
 		}
-		return $response;
 	}
 }

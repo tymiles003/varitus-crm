@@ -24,7 +24,6 @@ require_once('include/utils/utils.php'); //new
 require_once('include/utils/RecurringType.php');
 require_once('include/utils/EmailTemplate.php');
 require_once 'include/QueryGenerator/QueryGenerator.php';
-require_once 'include/QueryGenerator/EnhancedQueryGenerator.php';
 require_once 'include/ListView/ListViewController.php';
 require_once 'includes/runtime/Cache.php';
 
@@ -151,8 +150,8 @@ function getCurrencySymbolandCRate($id) {
 /** This function returns the terms and condition from the database.
  * Takes no param and the return type is text.
  */
-function getTermsAndConditions($moduleName) {
-	return Vtiger_Functions::getInventoryTermsAndCondition($moduleName);
+function getTermsandConditions() {
+	return Vtiger_Functions::getInventoryTermsAndCondition();
 }
 
 /** This function returns a string with removed new line character, single quote, and back slash double quoute.
@@ -251,8 +250,8 @@ function getTemplateDetails($templateid) {
  *  @param string $parent_type - module of the entity
  * 	return string $description - Returns description, merged with the input template.
  */
-function getMergedDescription($description, $id, $parent_type, $removeTags = false) {
-	return Vtiger_Functions::getMergedDescription($description, $id, $parent_type, $removeTags);
+function getMergedDescription($description, $id, $parent_type) {
+	return Vtiger_Functions::getMergedDescription($description, $id, $parent_type);
 }
 
 /** 	Function used to retrieve a single field value from database
@@ -282,8 +281,8 @@ function getrecurringObjValue() {
 	return Vtiger_Functions::getRecurringObjValue();
 }
 
-function getTranslatedString($str, $module = 'Vtiger', $language = '') {
-	return Vtiger_Functions::getTranslatedString($str, $module, $language);
+function getTranslatedString($str, $module = 'Vtiger') {
+	return Vtiger_Functions::getTranslatedString($str, $module);
 }
 
 /**
@@ -498,8 +497,8 @@ function updateRecordLabel($module,$recordId){
 	return Vtiger_Functions::updateCRMRecordLabel($module, $recordId);
 }
 
-function get_group_options() {
-    return Vtiger_Functions::get_group_options();
-}
 
+function get_group_options() {
+return Vtiger_Functions::get_group_options();
+}
 ?>

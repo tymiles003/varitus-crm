@@ -16,7 +16,6 @@
  *  Author       : JPL TSolucio, S. L. Joe Bordes
  ************************************************************************************/
 $languageStrings = array(
-	'Assets'                       => 'Recursos',
 	'SINGLE_Assets'                => 'Recurso',
 	'LBL_ADD_RECORD'               => 'Añadir Recurso',
 	'LBL_RECORDS_LIST'             => 'Lista de Recursos',

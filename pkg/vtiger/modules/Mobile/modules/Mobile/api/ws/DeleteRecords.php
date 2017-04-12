@@ -15,17 +15,18 @@ class Mobile_WS_DeleteRecords extends Mobile_WS_Controller {
 		global $current_user;
 		
 		$current_user = $this->getActiveUser();
+		
 		$records = $request->get('records');
 		if (empty($records)) {
 			$records = array($request->get('record'));
 		} else {
 			$records = Zend_Json::decode($records);
 		}
+		
 		$deleted = array();
 		foreach($records as $record) {
 			try {
-				$recordModel = Vtiger_Record_Model::getInstanceById($record);
-				$recordModel->delete();
+				vtws_delete($record, $current_user);
 				$result = true;
 			} catch(Exception $e) {
 				$result = false;

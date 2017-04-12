@@ -24,8 +24,6 @@ $languageStrings = array(
 	'Project Milestone Name' => 'Nazwa etapu',
 	'Milestone Date' => 'Data rozpoczęcia etapu',
 	'Project Milestone No' => 'Numer etapu',
-        'Type' => 'Rodzaj',
-    'Related to' => 'Związane z',
 	//picklist values
 	'administrative' => 'Administracyjny',
     'operative' => 'Operacyjny',

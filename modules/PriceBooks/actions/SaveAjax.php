@@ -12,9 +12,7 @@ class PriceBooks_SaveAjax_Action extends Vtiger_SaveAjax_Action {
 
 	public function saveRecord($request) {
 		$recordModel = $this->getRecordModelFromRequest($request);
-        vglobal('VTIGER_TIMESTAMP_NO_CHANGE_MODE', $request->get('_timeStampNoChangeMode',false));
 		$recordModel->save();
-        vglobal('VTIGER_TIMESTAMP_NO_CHANGE_MODE', false);
 		if($request->get('relationOperation')) {
 			$parentModuleName = $request->get('sourceModule');
 			$parentModuleModel = Vtiger_Module_Model::getInstance($parentModuleName);
@@ -28,8 +26,7 @@ class PriceBooks_SaveAjax_Action extends Vtiger_SaveAjax_Action {
 			//To store the relationship between Products/Services and PriceBooks
 			if ($parentRecordId && ($parentModuleName === 'Products' || $parentModuleName === 'Services')) {
 				$parentRecordModel = Vtiger_Record_Model::getInstanceById($parentRecordId, $parentModuleName);
-				$sellingPricesList = $parentModuleModel->getPricesForProducts($recordModel->get('currency_id'), array($parentRecordId));
-				$recordModel->updateListPrice($parentRecordId, $sellingPricesList[$parentRecordId]);
+				$recordModel->updateListPrice($parentRecordId, $parentRecordModel->get('unit_price'));
 			}
 		}
 		return $recordModel;

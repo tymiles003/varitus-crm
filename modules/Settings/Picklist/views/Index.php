@@ -28,13 +28,10 @@ class Settings_Picklist_Index_View extends Settings_Vtiger_Index_View {
         //TODO: see if you needs to optimize this , since its will gets all the fields and filter picklist fields
         $pickListFields = $moduleModel->getFieldsByType(array('picklist','multipicklist'));
         if(count($pickListFields) > 0) {
-            $defaultField = $request->get('fieldname');
-            if(!empty($defaultField)) {
-                $selectedPickListFieldModel = $pickListFields[$defaultField];
-            } else {
-                $selectedPickListFieldModel = reset($pickListFields);
-            }
+            $selectedPickListFieldModel = reset($pickListFields);
+
             $selectedFieldAllPickListValues = Vtiger_Util_Helper::getPickListValues($selectedPickListFieldModel->getName());
+            
 			
             $viewer->assign('PICKLIST_FIELDS',$pickListFields);
             $viewer->assign('SELECTED_PICKLIST_FIELDMODEL',$selectedPickListFieldModel);
@@ -55,7 +52,6 @@ class Settings_Picklist_Index_View extends Settings_Vtiger_Index_View {
         }
         $viewer->assign('SELECTED_MODULE_NAME', $sourceModule);
         $viewer->assign('QUALIFIED_NAME',$qualifiedName);
-        $viewer->assign('DEFAULT_FIELD', $defaultField);
         
 		$viewer->view('Index.tpl',$qualifiedName);
     }
@@ -66,25 +62,10 @@ class Settings_Picklist_Index_View extends Settings_Vtiger_Index_View {
 
 		$jsFileNames = array(
 			"modules.$moduleName.resources.$moduleName",
-            "~/libraries/jquery/colorpicker/js/colorpicker.js",
 		);
 
 		$jsScriptInstances = $this->checkAndConvertJsScripts($jsFileNames);
 		$headerScriptInstances = array_merge($headerScriptInstances, $jsScriptInstances);
 		return $headerScriptInstances;
-	}
-    
-    public function getHeaderCss(Vtiger_Request $request) {
-		$headerCssInstances = parent::getHeaderCss($request);
-
-
-		$cssFileNames = array(
-			'~/libraries/jquery/colorpicker/css/colorpicker.css'
-		);
-        
-		$cssInstances = $this->checkAndConvertCssStyles($cssFileNames);
-        $headerCssInstances = array_merge($headerCssInstances, $cssInstances);
-
-		return $headerCssInstances;
 	}
 }

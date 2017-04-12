@@ -16,8 +16,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 	private $assign;
 	private $hasAccess;
 	private $hasReadAccess;
-	private $hasCreateAccess;
-	private $hasWriteAccess;//Edit Access
+	private $hasWriteAccess;
 	private $hasDeleteAccess;
 	private $assignUsers;
 	
@@ -35,7 +34,6 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		$this->moduleFields = array();
 		$this->hasAccess = false;
 		$this->hasReadAccess = false;
-		$this->hasCreateAccess = false;
 		$this->hasWriteAccess = false;
 		$this->hasDeleteAccess = false;
 		$instance = vtws_getModuleInstance($this->webserviceObject);
@@ -86,7 +84,6 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		if($active == false){
 			$this->hasAccess = false;
 			$this->hasReadAccess = false;
-			$this->hasCreateAccess = false;
 			$this->hasWriteAccess = false;
 			$this->hasDeleteAccess = false;
 			return;
@@ -96,7 +93,6 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		if($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0){
 			$this->hasAccess = true;
 			$this->hasReadAccess = true;
-			$this->hasCreateAccess = true;
 			$this->hasWriteAccess = true;
 			$this->hasDeleteAccess = true;
 		}else{
@@ -117,7 +113,6 @@ class VtigerCRMObjectMeta extends EntityMeta {
 				if($permission != 1 || $permission != "1"){
 					$this->hasAccess = true;
 					if($globalactionid == 2 || $globalactionid == "2"){
-						$this->hasCreateAccess = true;
 						$this->hasWriteAccess = true;
 						$this->hasDeleteAccess = true;
 					}else{
@@ -126,15 +121,15 @@ class VtigerCRMObjectMeta extends EntityMeta {
 				}
 			}
 			
-			$sql = 'select * from vtiger_profile2tab where profileid in ('.generateQuestionMarks($profileList).') and tabid = ? and permissions = ?';
-			$result = $adb->pquery($sql,array($profileList,$this->getTabId(),0));
+			$sql = 'select * from vtiger_profile2tab where profileid in ('.generateQuestionMarks($profileList).') and tabid = ?;';
+			$result = $adb->pquery($sql,array($profileList,$this->getTabId()));
 			$standardDefined = false;
-			$permission = $adb->num_rows($result);
-			if ($permission > 0) {
-				$this->hasAccess = true;
-			} else {
+			$permission = $adb->query_result($result,1,"permissions");
+			if($permission == 1 || $permission == "1"){
 				$this->hasAccess = false;
 				return;
+			}else{
+				$this->hasAccess = true;
 			}
 			
 			//operation=2 is delete operation.
@@ -163,14 +158,11 @@ class VtigerCRMObjectMeta extends EntityMeta {
 						$this->hasDeleteAccess = true;
 					}else if($operation == 4 || $operation == "4"){
 						$this->hasReadAccess = true;
-					}else if($operation == 7 || $operation == "7"){
-						$this->hasCreateAccess = true;
 					}
 				}
 			}
 			if(!$standardDefined){
 				$this->hasReadAccess = true;
-				$this->hasCreateAccess = true;
 				$this->hasWriteAccess = true;
 				$this->hasDeleteAccess = true;
 			}
@@ -192,13 +184,6 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		return $this->hasWriteAccess;
 	}
 	
-	function hasCreateAccess() {
-		if(!$this->meta) {
-			$this->retrieveMeta();
-		}
-		return $this->hasCreateAccess;
-	}
-
 	function hasReadAccess(){
 		if(!$this->meta){
 			$this->retrieveMeta();
@@ -293,12 +278,8 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		}
 		if($this->fieldColumnMapping === null){
 			$this->fieldColumnMapping =  array();
-			foreach ($this->moduleFields as $fieldName => $webserviceField) {
-				if ($this->getEntityName() == "Emails") {
-					if (strcasecmp($webserviceField->getFieldDataType(), 'file') !== 0) {
-						$this->fieldColumnMapping[$fieldName] = $webserviceField->getColumnName();
-					}
-				} else {
+			foreach ($this->moduleFields as $fieldName=>$webserviceField) {
+                if(strcasecmp($webserviceField->getFieldDataType(),'file') !== 0){
 					$this->fieldColumnMapping[$fieldName] = $webserviceField->getColumnName();
 				}
 			}
@@ -394,7 +375,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 		$tabid = $this->getTabId();
 		require('user_privileges/user_privileges_'.$this->user->id.'.php');
 		if($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] ==0){
-			$sql = "select *, '0' as readonly from vtiger_field where tabid =? and block in (".generateQuestionMarks($block).") and displaytype in (1,2,3,4,5,6)";
+			$sql = "select *, '0' as readonly from vtiger_field where tabid =? and block in (".generateQuestionMarks($block).") and displaytype in (1,2,3,4,5)";
 			$params = array($tabid, $block);	
 		}else{
 			$profileList = getCurrentUserProfileList();
@@ -408,7 +389,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 						ON vtiger_def_org_field.fieldid = vtiger_field.fieldid
 						WHERE vtiger_field.tabid =? AND vtiger_profile2field.visible = 0 
 						AND vtiger_profile2field.profileid IN (". generateQuestionMarks($profileList) .")
-						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4,5,6) and vtiger_field.presence in (0,2) group by columnname";
+						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4,5) and vtiger_field.presence in (0,2) group by columnname";
 				$params = array($tabid, $profileList, $block);
 			} else {
 				$sql = "SELECT vtiger_field.*, vtiger_profile2field.readonly
@@ -419,7 +400,7 @@ class VtigerCRMObjectMeta extends EntityMeta {
 						ON vtiger_def_org_field.fieldid = vtiger_field.fieldid
 						WHERE vtiger_field.tabid=? 
 						AND vtiger_profile2field.visible = 0 
-						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4,5,6) and vtiger_field.presence in (0,2) group by columnname";
+						AND vtiger_def_org_field.visible = 0 and vtiger_field.block in (".generateQuestionMarks($block).") and vtiger_field.displaytype in (1,2,3,4,5) and vtiger_field.presence in (0,2) group by columnname";
 				$params = array($tabid, $block);
 			}
 		}

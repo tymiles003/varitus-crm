@@ -23,7 +23,6 @@ vimport ('includes.runtime.JavaScript');
 
 vimport ('includes.runtime.LanguageHandler');
 vimport ('includes.runtime.Cache');
-vimport ('vtlib.Vtiger.Runtime');
 
 abstract class Vtiger_EntryPoint {
 

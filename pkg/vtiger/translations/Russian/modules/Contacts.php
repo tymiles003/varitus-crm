@@ -50,12 +50,6 @@ $languageStrings = array(
 	'Contact Id' => 'Контакт Id',
     'Support Start Date'           => 'Поддержка Дата начала',
     'Support End Date'             => 'Поддержка Дата окончания',
-	'LBL_TRANSACTIONS' => 'Операции',
-
-  'Other Phone' => 'Среднее Телефон',
-  'Email' => 'Основной Адрес Электронной Почты',
-  'Secondary Email' => 'Вторичной Электронной Почте',
-
 );
 $jsLanguageStrings = array(
 );

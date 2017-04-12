@@ -39,7 +39,6 @@ $languageStrings = array(
 	'LBL_SEVERITY'                 => 'Важность'            , // KEY 5.x: Severity
 	'LBL_CONVERT_FAQ'              => 'Преобразовать в ЧаВо'              , 
 	'LBL_RELATED_TO'               => 'Связан с'             ,
-    'Related To'                   => 'В связи с'              ,
 
 	//added to support i18n in ticket mails
 	'Hi' => 'Привет',
@@ -83,11 +82,4 @@ $languageStrings = array(
 	'HelpDesk ID' => 'Поддержка ID',
 	'Ticket ID' => 'Номер',
 	'LBL_TICKET_NUMBER' => 'Количество билетов',
-
-  'Contact Name' => 'Имя Контакта',
-  'LBL_SUBJECT' => 'Тема : ',
-  'LBL_ADD_DOCUMENT' => 'Добавить Документ',
-  'LBL_OPEN_TICKETS' => 'Билеты С Открытой',
-  'LBL_CREATE_TICKET' => 'Создайте Тикет',
-
 );

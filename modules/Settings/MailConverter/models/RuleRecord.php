@@ -85,13 +85,13 @@ class Settings_MailConverter_RuleRecord_Model extends Settings_Vtiger_Record_Mod
 						'linktype' => 'LISTVIEW',
 						'linklabel' => vtranslate('LBL_EDIT', $qualifiedModuleName). ' ' .vtranslate('RULE', $qualifiedModuleName),
 						'linkurl' => $this->getEditViewUrl(),
-						'linkicon' => 'fa fa-pencil'
+						'linkicon' => 'icon-pencil'
 				),
 				array(
 						'linktype' => 'LISTVIEW',
 						'linklabel' => vtranslate('LBL_DELETE', $qualifiedModuleName). ' ' .vtranslate('RULE', $qualifiedModuleName),
 						'linkurl' => $this->getDeleteUrl(),
-						'linkicon' => 'fa fa-trash'
+						'linkicon' => 'icon-trash'
 				)
 		);
 		foreach($recordLinks as $recordLink) {

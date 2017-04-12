@@ -11,33 +11,22 @@
 class Settings_CustomerPortal_Save_Action extends Settings_Vtiger_Index_Action {
 
 	public function process(Vtiger_Request $request) {
+		$moduleName = $request->getModule();
 		$qualifiedModuleName = $request->getModule(false);
-		$enableModules = $request->get('enableModules');
+		$privileges = $request->get('privileges');
 		$defaultAssignee = $request->get('defaultAssignee');
-		$response = new Vtiger_Response();
-		if ($defaultAssignee && $enableModules) {
-			$moduleModel = Settings_CustomerPortal_Module_Model::getInstance($qualifiedModuleName);
-			$moduleModel->set('enableModules', $enableModules);
-			$moduleModel->set('defaultAssignee', $defaultAssignee);
-			$moduleModel->set('moduleSequence', $request->get('portalModulesInfo'));
-			$moduleModel->set('support_notification', $request->get('renewalPeriod'));
-			$moduleModel->set('announcement', $request->get('announcement'));
-			$moduleModel->set('shortcuts', $request->get('defaultShortcuts'));
-			$moduleModel->set('moduleFieldsInfo', $request->get('moduleFieldsInfo'));
-			$moduleModel->set('relatedModuleList', $request->get('relatedModuleList'));
-			$moduleModel->set('charts', $request->get('activeCharts'));
-			$moduleModel->set('widgets', $request->get('activeWidgets'));
-			$moduleModel->set('recordsVisible', $request->get('recordsVisible'));
-			$moduleModel->set('recordPermissions', $request->get('recordPermissions'));
-			$moduleModel->save();
-			$response->setResult(array('success' => true));
-		} else {
-			$response->setResult(array('success' => false));
-		}
-		$response->emit();
-	}
+		$portalModulesInfo = $request->get('portalModulesInfo');
 
-	public function validateRequest(Vtiger_Request $request) {
-		$request->validateWriteAccess();
+		if ($privileges && $defaultAssignee && $portalModulesInfo) {
+			$moduleModel = Settings_CustomerPortal_Module_Model::getInstance($qualifiedModuleName);
+			$moduleModel->set('privileges', $privileges);
+			$moduleModel->set('defaultAssignee', $defaultAssignee);
+			$moduleModel->set('portalModulesInfo', $portalModulesInfo);
+			$moduleModel->save();
+		}
+		
+		$responce = new Vtiger_Response();
+        $responce->setResult(array('success'=>true));
+        $responce->emit();
 	}
 }

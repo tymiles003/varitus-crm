@@ -2,7 +2,7 @@
 /*+***********************************************************************************
  * The contents of this file are subject to the vtiger CRM Public License Version 1.0
  * ("License"); You may not use this file except in compliance with the License
- * The Original Code is: vtiger CRM Open Source
+ * The Original Code is:  vtiger CRM Open Source
  * The Initial Developer of the Original Code is vtiger.
  * Portions created by vtiger are Copyright (C) vtiger.
  * All Rights Reserved.
@@ -17,7 +17,7 @@ $languageStrings = array(
 	'LBL_ADD_RECORD' => 'اضافة حدث',
 	'LBL_RECORDS_LIST' => 'قائمة الاحداث',
 	'LBL_EVENTS' => 'الاحداث',
-	'LBL_TODOS' => 'مهمة',
+	'LBL_TODOS' => 'للعمل',
 	'LBL_HOLD_FOLLOWUP_ON' => 'استمرار المتابعة في',
     'LBL_CREATE_FOLLOWUP_EVENT'    => 'خلق متابعة الحدث',
 	
@@ -33,10 +33,9 @@ $languageStrings = array(
 	'Location'=>'الموقع',
 	'Send Reminder' => 'ارسال تذكير',
 	'End Date & Time' => 'تاريخ الانتهاء والتوقيت',
-    'End Date'   => 'تاريخ الانتهاء والتوقيت',
 	'Activity Type'=>'نوع النشاط',
 	'Visibility' => 'مرئية',
-    'Related To' => 'المتعلقة',
+	'Recurrence' => 'تكرار',
 	
 	//Visibility picklist values
 	'Private' => 'خاص',
@@ -47,7 +46,7 @@ $languageStrings = array(
 	'Meeting' => 'مقابلة',
 	
 	//Status picklist values
-	'Planned' => 'مخطط',
+	'Planned' => 'Planned',
 	'Held' => 'متابعة',
 	'Not Held' => 'بدون متابعة',
 	
@@ -94,11 +93,6 @@ $languageStrings = array(
 	'LBL_CALENDAR_VIEW' => 'عرض المفكرة',
 
     'LBL_INVITE_USER_BLOCK' => 'دعوة',
-    'LBL_INVITE_USERS' => 'دعوة مستخدمين',
-    'LBL_INVITE_PEOPLE' => 'دعوة الناس',
-
-
-  'INVITATION' => ' دعوة ',
-  'Busy' => 'مشغول',
+    'LBL_INVITE_USERS' => 'دعوة مستخدمين'
 
 );

@@ -37,20 +37,16 @@
 	<table class="table-bordered row-fluid textAlignCenter">
 		<thead>
 			<tr class="listViewHeaders">
-				{if $LISTVIEW_LINKS}
-					<th width="5%">
-						<input type="checkbox" id="listViewEntriesMainCheckBox" />
-					</th>
-				{/if}
+				<th width="5%">
+					<input type="checkbox" id="listViewEntriesMainCheckBox" />
+				</th>
 				{foreach item=LISTVIEW_HEADER from=$LISTVIEW_HEADERS}
 				<th nowrap {*if $LISTVIEW_HEADER@last} colspan="2" {/if*}>
 					<a class="listViewHeaderValues">{vtranslate($LISTVIEW_HEADER->get('label'), $MODULE)}</a>
 				</th>
 				{/foreach}
-				{if $IS_MODULE_EDITABLE}
-					<th>{vtranslate('LBL_MERGE_SELECT', $MODULE)}</th>
-					<th>{vtranslate('LBL_ACTION', $MODULE)}</th>
-				{/if}
+				<th>{vtranslate('LBL_MERGE_SELECT', $MODULE)}</th>
+				<th>{vtranslate('LBL_ACTION', $MODULE)}</th>
 			</tr>
 		</thead>
 		{assign var=mergeRecordCount value=0}
@@ -59,11 +55,9 @@
 			{assign var=recordCount value=0}
 			{foreach item=RECORD from=$LISTVIEW_ENTRY name=listview}
 				<tr class="listViewEntries" data-id='{$RECORD.recordid}' id="{$MODULE}_listView_row_{$smarty.foreach.listview.index+1}">
-					{if $LISTVIEW_LINKS}
-						<td width="5%" style='border-bottom:1px solid #DDD;'>
-							<input type="checkbox" value="{$RECORD.recordid}" class="listViewEntriesCheckBox"/>
-						</td>
-					{/if}
+					<td width="5%" style='border-bottom:1px solid #DDD;'>
+						<input type="checkbox" value="{$RECORD.recordid}" class="listViewEntriesCheckBox"/>
+					</td>
 					{assign var=sameRowValues value=true}
 					{foreach item=LISTVIEW_HEADER from=$LISTVIEW_HEADERS}
 					{if $LISTVIEW_HEADER->get('name') eq 'recordid'}
@@ -76,15 +70,13 @@
 						</td>
 					{/if}
 					{/foreach}
-					{if $IS_MODULE_EDITABLE}
-						<td style='border-bottom:1px solid #DDD;'>
-							<input type="checkbox" data-id='{$RECORD.recordid}' name="mergeRecord" data-group="{$GROUP_NAME}"/>
-						</td>
-						{if $recordCount eq 0}
-						<td align='center' rowspan="{$groupCount}" style="border-left:1px solid #DDD;border-bottom:1px solid #DDD;vertical-align: middle;text-align: center">
-							<input type="button" value="{vtranslate("LBL_MERGE",'Vtiger')}" name="merge" class="btn btn-success" data-group="{$GROUP_NAME}">
-						</td>
-						{/if}
+					<td style='border-bottom:1px solid #DDD;'>
+						<input type="checkbox" data-id='{$RECORD.recordid}' name="mergeRecord" data-group="{$GROUP_NAME}"/>
+					</td>
+					{if $recordCount eq 0}
+					<td align='center' rowspan="{$groupCount}" style="border-left:1px solid #DDD;border-bottom:1px solid #DDD;vertical-align: middle;text-align: center">
+						<input type="button" value="{vtranslate("LBL_MERGE",'Vtiger')}" name="merge" class="btn btn-success" data-group="{$GROUP_NAME}">
+					</td>
 					{/if}
 					{assign var=recordCount value=$recordCount+1}
 				</tr>

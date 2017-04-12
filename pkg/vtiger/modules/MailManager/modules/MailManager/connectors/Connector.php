@@ -2,7 +2,7 @@
 /*+**********************************************************************************
  * The contents of this file are subject to the vtiger CRM Public License Version 1.1
  * ("License"); You may not use this file except in compliance with the License
- * The Original Code is: vtiger CRM Open Source
+ * The Original Code is: vtiger CRM Open source
  * The Initial Developer of the Original Code is vtiger.
  * Portions created by vtiger are Copyright (C) vtiger.
  * All Rights Reserved.
@@ -63,7 +63,7 @@ class MailManager_Connector_Connector {
 				$model->ssltype(), $model->certvalidate(), $folder);
 		$baseUrl = sprintf('{%s:%s/%s/%s/%s}', $model->server(), $port, $model->protocol(),
 				$model->ssltype(), $model->certvalidate());
-		return new self($url, $model->username(), $model->password(), $baseUrl, $model->serverName());
+		return new self($url, $model->username(), $model->password(), $baseUrl);
 	}
 
 
@@ -75,22 +75,11 @@ class MailManager_Connector_Connector {
 	 * @param $baseUrl Optional - url of the mailserver excluding folder name.
 	 *	This is used to fetch the folders of the mail box
 	 */
-	public function __construct($url, $username, $password, $baseUrl=false, $serverName = '') {
+	public function __construct($url, $username, $password, $baseUrl=false) {
 		$boxUrl = $this->convertCharacterEncoding(html_entity_decode($url),'UTF7-IMAP','UTF-8'); //handle both utf8 characters and html entities
 		$this->mBoxUrl = $boxUrl;
 		$this->mBoxBaseUrl = $baseUrl; // Used for folder List
-
-		/**
-		 * disabled Kerberos authentication
-		 * reference : http://sugarcrmsolutions.blogspot.in/2013/12/problems-in-email-integration.html
-		 */
-
-		if($serverName == 'gmail') {
-			$this->mBox = @imap_open($boxUrl, $username, $password);
-		} else {
-			$this->mBox = @imap_open($boxUrl, $username, $password, NULL, 1, array('DISABLE_AUTHENTICATOR' => 'GSSAPI'));
-		}
-
+		$this->mBox = @imap_open($boxUrl, $username, $password);
 		$this->isError();
 	}
 
@@ -234,23 +223,10 @@ class MailManager_Connector_Connector {
 
 			$records = imap_fetch_overview($this->mBox, $sequence);
 			$mails = array();
-			$mailIds = array();
-
-			// to make sure this should not break in Vtiger6
-			$layout = Vtiger_Viewer::getDefaultLayoutName();
-			if($layout == "v7"){
-				$mbox = false;
-			} else {
-				$mbox = $this->mBox;
-			}
-
 			foreach($records as $result) {
-				$message = MailManager_Message_Model::parseOverview($result,$mbox);
-				$mailIds[] = $message->msgNo();
-				array_unshift($mails, $message);
+				array_unshift($mails, MailManager_Message_Model::parseOverview($result));
 			}
 			$folder->setMails($mails);
-			$folder->setMailIds($mailIds);
 			$folder->setPaging($reverse_end, $reverse_start, $maxLimit, $folderCheck->Nmsgs, $start);
 		}
 	}
@@ -282,7 +258,7 @@ class MailManager_Connector_Connector {
 		if ($interval && isset($_SESSION) && isset($_SESSION['mailmanager_clearDBCacheIntervalLast'])) {
 			$lastClearTimeFromSession = intval($_SESSION['mailmanager_clearDBCacheIntervalLast']);
 			if (($timenow - $lastClearTimeFromSession) < ($timenow - $interval)) {
-				$interval = false; 
+				$interval = false;
 			}
 		}
 		if ($interval) {
@@ -327,9 +303,9 @@ class MailManager_Connector_Connector {
 	 * @param String $msgno - Message number
 	 * @return MailManager_Model_Message
 	 */
-	public function openMail($msgno, $folder) {
+	public function openMail($msgno) {
 		$this->clearDBCache();
-		return new MailManager_Message_Model($this->mBox, $msgno, true, $folder);
+		return new MailManager_Message_Model($this->mBox, $msgno, true);
 	}
 
 
@@ -380,20 +356,10 @@ class MailManager_Connector_Connector {
 
 			$mails = array();
 			$records = imap_fetch_overview($this->mBox, implode(',', $nos));
-
-			// to make sure this should not break in Vtiger6
-			$layout = Vtiger_Viewer::getDefaultLayoutName();
-			if($layout == "v7"){
-				$mbox = false;
-			} else {
-				$mbox = $this->mBox;
-			}
-
 			foreach($records as $result) {
-				array_unshift($mails, MailManager_Message_Model::parseOverview($result,$mbox));
+				array_unshift($mails, MailManager_Message_Model::parseOverview($result));
 			}
 			$folder->setMails($mails);
-			$folder->setMailIds($nos);
 			$folder->setPaging($reverse_end, $reverse_start, $maxLimit, $nmsgs, $start);  //-1 as it starts from 0
 		}
 	}

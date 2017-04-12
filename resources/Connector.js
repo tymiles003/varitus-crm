@@ -49,11 +49,10 @@ var AppConnector = {
 		if(typeof params.data == 'undefined') {
 			if(typeof params == 'string') {
 				var callerParams = params;
-				var index = callerParams.indexOf('?');
-				if (index !== -1) {
-					var subStr = callerParams.substr(0, index+1);//need to replace only "index.php?" or "?"
-					callerParams = callerParams.replace(subStr,'');
- 				}
+				if(callerParams.indexOf('?')!== -1) {
+					var callerParamsParts = callerParams.split('?')
+					callerParams = callerParamsParts[1];
+				}
 			}else{
 				callerParams = jQuery.extend({}, params);
 			}

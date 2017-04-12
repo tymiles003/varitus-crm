@@ -25,7 +25,7 @@ $languageStrings = array(
 	'Worked Hours'	=>	"Ore lucrate",
 	'Start Date'	=>	"Data de începere",
 	'End Date'	=>	"Data de încheiere",
-	'Related to'	=>	"Legate de",
+	'Related To'	=>	"Legate de",
 	'administrative' => 'Administrativ',
     'operative' => 'Operativ',
     'other' => 'Alte',
@@ -41,8 +41,4 @@ $languageStrings = array(
 	'Completed'	=>	"Terminat",
 	'Deferred'	=>	"Amânat",
 	'Canceled'	=>	"Anulat",
-        'LBL_NO_DATE_VALUE_MSG' => 'sau sarcini de proiect nu au Start și / sau Data de încheiere',
-
-  'Canceled ' => 'Anulat',
-
 );

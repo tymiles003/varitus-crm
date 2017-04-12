@@ -8,7 +8,6 @@
  * All Rights Reserved.
  ************************************************************************************/
 $languageStrings = array(
-    'Quotes'                       => 'Devis'                       , 
 	'SINGLE_Quotes'                => 'Devis'                       , 
 	'LBL_EXPORT_TO_PDF'            => 'Export PDF'                  , 
 	'LBL_SEND_MAIL_PDF'            => 'Send Email with PDF'         , // TODO: Review
@@ -21,7 +20,7 @@ $languageStrings = array(
 	'Inventory Manager'            => 'Responsable du stock'        , 
 	'Accepted'                     => 'Accepté'                    , 
 	'Rejected'                     => 'Rejeté'                     ,
-    'Related To'                   => 'Relatif à la'                ,
+        'Open Quotes'                  => 'Cours ouverts',
 	
 	//Translations used for Export to Pdf
 	'Valid Date' => 'Date de validité',
@@ -38,9 +37,9 @@ $languageStrings = array(
 	'Tax' => 'Taxe',
 	'Contact Name' => 'Nom contact',
 	'Grand Total:' => 'Total:',
-
-  'LBL_THIS' => 'Cette',
-  'LBL_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_OR_REPLACE_THIS_ITEM' => 'est supprimé du système.merci de supprimer ou de remplacer cet élément',
-  'LBL_THIS_LINE_ITEM_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_THIS_LINE_ITEM' => 'Cet élément est supprimé du système,veuillez supprimer cette ligne d\'articles',
-
+    
+        //Taxes 
+        'VAT'      => 'TVA', 
+        'Service'  => 'Service', 
+        'Sales'    => 'Ventes'
 );

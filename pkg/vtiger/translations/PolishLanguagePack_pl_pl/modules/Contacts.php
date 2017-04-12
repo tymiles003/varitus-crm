@@ -19,9 +19,6 @@ $languageStrings = array(
 	'LBL_CONTACT_INFORMATION' => 'Podstawowe informacje',
 	'LBL_CUSTOMER_PORTAL_INFORMATION' => 'Dostęp do portalu Klienta',
 	'LBL_IMAGE_INFORMATION' => 'Informacje dotyczące zdjęcia',
-	
-	'LBL_COPY_OTHER_ADDRESS'       => 'Kopiowanie Inne Adres',
-	'LBL_COPY_MAILING_ADDRESS'     => 'Kopiuj adres korespondencyjny', 
 
 	//Field Labels
 	'Office Phone' => 'Telefon biurowy',
@@ -59,12 +56,4 @@ $languageStrings = array(
 	'Prof.'=>'Prof.',
 
 	'User List'=>'Lista użytkowników',
-	'LBL_TRANSACTIONS' => 'Transacties',
-	
-
-  'Other Phone' => 'Średnia Telefon',
-  'Email' => 'Podstawowy Adres E-Mail',
-  'Secondary Email' => 'Wtórne E-Mail',
-  'Contact Id' => 'Kontakt ID',
-
 );

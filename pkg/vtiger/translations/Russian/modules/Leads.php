@@ -30,7 +30,8 @@ $languageStrings = array(
 	'Cold'                         => 'Холодный'            , 
 	'Contact in Future'            => 'Контакт в Будущем', 
 	'Contacted'                    => 'Есть Контакт'     , 
-	'Hot'                          => 'Горячий'              , 
+	'Hot'                          => 'Горячий'              ,
+        'Hot Leads'                    => 'Горячие снабжении',
 	'Junk Lead'                    => 'Ненужное Обращение', 
 	'Lost Lead'                    => 'Утерянное Обращение', 
 	'Not Contacted'                => 'Не Связывался'   , 
@@ -39,18 +40,15 @@ $languageStrings = array(
 	'Warm'                         => 'Теплый'                , 
 	'LBL_CONVERT_LEAD'             => 'Преобразовать:' , 
 	'LBL_TRANSFER_RELATED_RECORD'  => 'Передача связанных запись в'  , 
-	'LBL_CONVERT_LEAD_ERROR'       => 'Вы должны включить либо организации или Контакт преобразовать свинец',  
+	'LBL_CONVERT_LEAD_ERROR'       => 'Вы должны включить либо организации или Контакт преобразовать свинец', 
+	'LBL_CONVERT_LEAD_ERROR_TITLE' => 'Модули для инвалидов'            , 
+	'CANNOT_CONVERT'               => 'Невозможно Конвертировать', 
+	'LBL_FOLLOWING_ARE_POSSIBLE_REASONS' => 'Ниже приведены возможные причины', 
 	'LBL_LEADS_FIELD_MAPPING_INCOMPLETE' => 'поле отображения неполной', 
+	'LBL_MANDATORY_FIELDS_ARE_EMPTY' => 'обязательные поля пусты', 
 	'LBL_LEADS_FIELD_MAPPING'      => 'Ведет поле отображения', 
-	'LBL_CUSTOM_FIELD_MAPPING'     => 'Ведущий отображения данных Преобразование'          , 
-    'LBL_IMAGE_INFORMATION' => 'Профиль фото',
-    'Lead Image' => 'Ведущий изображения',
+	'LBL_CUSTOM_FIELD_MAPPING'     => 'Редактировать поле Mapping'          , 
 	
-
-  'Phone' => 'Основной Телефон',
-  'Secondary Email' => 'Вторичной Электронной Почте',
-  'Email' => 'Основной Адрес Электронной Почты',
-
 );
 $jsLanguageStrings = array(
 	'JS_SELECT_CONTACTS'           => 'Контакты для исходящее'  , 

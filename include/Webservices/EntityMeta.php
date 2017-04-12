@@ -11,7 +11,7 @@
 abstract class EntityMeta{
 	
 	public static $RETRIEVE = "DetailView";
-	public static $CREATE = "CreateView";
+	public static $CREATE = "Save";
 	public static $UPDATE = "EditView";
 	public static $DELETE = "Delete";
 	
@@ -47,7 +47,7 @@ abstract class EntityMeta{
 			$this->emailFields =  array();
 			$moduleFields = $this->getModuleFields();
 			foreach ($moduleFields as $fieldName=>$webserviceField) {
-				if((strcasecmp($webserviceField->getFieldType(),'e') === 0) || $webserviceField->getUIType() === '13'){
+				if(strcasecmp($webserviceField->getFieldType(),'e') === 0){
 					array_push($this->emailFields, $fieldName);
 				}
 			}
@@ -259,7 +259,6 @@ abstract class EntityMeta{
 	abstract function hasDeleteAccess();
 	abstract function hasAccess();
 	abstract function hasReadAccess();
-	abstract function hasCreateAccess();
 	abstract function hasWriteAccess();
 	abstract function getEntityName();
 	abstract function getEntityId();

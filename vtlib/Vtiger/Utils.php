@@ -70,9 +70,9 @@ class Vtiger_Utils {
 		$relativeFilePath = str_replace($rootdirpath, '', $realfilepath);
 		$filePathParts = explode('/', $relativeFilePath);
 
-		if(stripos($realfilepath, $rootdirpath) !== 0 || in_array($filePathParts[0], $unsafeDirectories)) {
+                if(stripos($realfilepath, $rootdirpath) !== 0 || in_array($filePathParts[0], $unsafeDirectories)) {
 			if($dieOnFail) {
-				die('Sorry! Attempt to access restricted file. - '.$filepath);
+				die("Sorry! Attempt to access restricted file.");
 			}
 			return false;
 		}
@@ -105,7 +105,7 @@ class Vtiger_Utils {
 
 		if(stripos($realfilepath, $rootdirpath) !== 0) {
 			if($dieOnFail) {
-				die('Sorry! Attempt to access restricted file. - '.$filepath);
+				die("Sorry! Attempt to access restricted file.");
 			}
 			return false;
 		}
@@ -207,8 +207,7 @@ class Vtiger_Utils {
 	 */
 	static function AddColumn($tablename, $columnname, $criteria) {
 		global $adb;
-		$db = PearDatabase::getInstance();
-		if (!in_array($columnname, $db->getColumnNames($tablename))) {
+		if(!in_array($columnname, $adb->getColumnNames($tablename))) {
 			self::AlterTable($tablename, " ADD COLUMN $columnname $criteria");
 		}
 	}

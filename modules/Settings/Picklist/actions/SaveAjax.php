@@ -17,7 +17,6 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
         $this->exposeMethod('assignValueToRole');
         $this->exposeMethod('saveOrder');
         $this->exposeMethod('enableOrDisable');
-        $this->exposeMethod('edit');
     }
 
     public function process(Vtiger_Request $request) {
@@ -29,7 +28,7 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
      * @function updates user tables with new picklist value for default event and status fields
      */
     public function updateDefaultPicklistValues($pickListFieldName,$oldValue,$newValue) {
-		$db = PearDatabase::getInstance();
+        $db = PearDatabase::getInstance();            
             if($pickListFieldName == 'activitytype')
                 $defaultFieldName = 'defaultactivitytype';
             else
@@ -60,10 +59,9 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
     }
     
     public function add(Vtiger_Request $request) {
-        $newValues = $request->getRaw('newValue');
+        $newValue = $request->getRaw('newValue');
         $pickListName = $request->get('picklistName');
         $moduleName = $request->get('source_module');
-        $selectedColor = $request->get('selectedColor');
         $moduleModel = Settings_Picklist_Module_Model::getInstance($moduleName);
         $fieldModel = Settings_Picklist_Field_Model::getInstance($pickListName, $moduleModel);
         $rolesSelected = array();
@@ -81,14 +79,8 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
         }
         $response = new Vtiger_Response();
         try{
-			$newValuesArray = explode(',', $newValues);
-			$result = array();
-			foreach($newValuesArray as $i => $newValue) {
-				$id = $moduleModel->addPickListValues($fieldModel, trim($newValue), $rolesSelected, $selectedColor);
-				$result['id'.$i] = $id['id'];
-			}
-            $moduleModel->handleLabels($moduleName, $newValuesArray, array(), 'add');
-			$response->setResult($result);
+            $id = $moduleModel->addPickListValues($fieldModel, $newValue, $rolesSelected);
+            $response->setResult(array('id' => $id['id']));
         }  catch (Exception $e) {
             $response->setError($e->getCode(), $e->getMessage());
         }
@@ -100,11 +92,6 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
         
         $newValue = $request->getRaw('newValue');
         $pickListFieldName = $request->get('picklistName');
-        
-        // we should clear cache to update with latest values
-        $rolesList = $request->get('rolesList');
-        $color = $request->get('selectedColor');
-        
         $oldValue = $request->getRaw('oldValue');
 		$id = $request->getRaw('id');
         
@@ -114,8 +101,7 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
         $moduleModel = new Settings_Picklist_Module_Model();
         $response = new Vtiger_Response();
         try{
-            $status = $moduleModel->renamePickListValues($pickListFieldName, $oldValue, $newValue, $moduleName, $id, $rolesList, $color);
-            $moduleModel->handleLabels($moduleName,$newValue,$oldValue,'rename');
+            $status = $moduleModel->renamePickListValues($pickListFieldName, $oldValue, $newValue, $moduleName, $id);
             $response->setResult(array('success',$status));
         } catch (Exception $e) {
             $response->setError($e->getCode(), $e->getMessage());
@@ -128,20 +114,14 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
         $valueToDelete = $request->getRaw('delete_value');
         $replaceValue = $request->getRaw('replace_value');
         $pickListFieldName = $request->get('picklistName');
-        $moduleModel = Settings_Picklist_Module_Model::getInstance($moduleName);
-        $pickListDeleteValue = $moduleModel->getActualPicklistValues($valueToDelete,$pickListFieldName);
-
-		if($moduleName == 'Events' && ($pickListFieldName == 'activitytype' || $pickListFieldName == 'eventstatus')) {
-			$db = PearDatabase::getInstance();
-			$primaryKey = Vtiger_Util_Helper::getPickListId($pickListFieldName);
-			$replaceValueQuery = $db->pquery("SELECT $pickListFieldName FROM ".$moduleModel->getPickListTableName($pickListFieldName)." WHERE $primaryKey IN (".generateQuestionMarks($replaceValue).")",array($replaceValue));
-			$actualReplaceValue = decode_html($db->query_result($replaceValueQuery,0,$pickListFieldName));
-			$this->updateDefaultPicklistValues($pickListFieldName,$pickListDeleteValue,$actualReplaceValue);
+        
+        if($moduleName == 'Events' && ($pickListFieldName == 'activitytype' || $pickListFieldName == 'eventstatus')) {
+             $this->updateDefaultPicklistValues($pickListFieldName,$valueToDelete,$replaceValue);
         } 
+        $moduleModel = Settings_Picklist_Module_Model::getInstance($moduleName);
         $response = new Vtiger_Response();
         try{
             $status = $moduleModel->remove($pickListFieldName, $valueToDelete, $replaceValue, $moduleName);
-            $moduleModel->handleLabels($moduleName,array(),$pickListDeleteValue,'delete');
             $response->setResult(array('success',$status));
         } catch (Exception $e) {
             $response->setError($e->getCode(), $e->getMessage());
@@ -183,16 +163,12 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
     
     public function saveOrder(Vtiger_Request $request) {
         $pickListFieldName = $request->get('picklistName');
-        
-        // we should clear cache to update with latest values
-        $rolesList = $request->get('rolesList');
-
         $picklistValues = $request->getRaw('picklistValues');
         
         $moduleModel = new Settings_Picklist_Module_Model();
         $response = new Vtiger_Response();
         try{
-            $moduleModel->updateSequence($pickListFieldName, $picklistValues, $rolesList);
+            $moduleModel->updateSequence($pickListFieldName, $picklistValues);
             $response->setResult(array('success',true));
         } catch (Exception $e) {
             $response->setError($e->getCode(), $e->getMessage());
@@ -216,45 +192,8 @@ class Settings_Picklist_SaveAjax_Action extends Settings_Vtiger_Basic_Action {
         }
         $response->emit();
     }
-            
-    public function validateRequest(Vtiger_Request $request) {
-        $request->validateWriteAccess();
-    }
-    
-    public function edit(Vtiger_Request $request) {
-        $moduleName = $request->get('source_module');
-        
-        $newValue = $request->getRaw('newValue');
-        $pickListFieldName = $request->get('picklistName');
-        $nonEditablePicklistValues = Settings_Picklist_Field_Model::getNonEditablePicklistValues($pickListFieldName);
-        
-        // we should clear cache to update with latest values
-        $rolesList = $request->get('rolesList');
-        $color = $request->get('selectedColor');
-        
-        $oldValue = $request->getRaw('oldValue');
-		$id = $request->getRaw('id');
-        
-        if($moduleName == 'Events' && ($pickListFieldName == 'activitytype' || $pickListFieldName == 'eventstatus')) {
-             $this->updateDefaultPicklistValues($pickListFieldName,$oldValue,$newValue);
-        }
-        
-        $moduleModel = new Settings_Picklist_Module_Model();
-        $response = new Vtiger_Response();
-        if($oldValue != $newValue && empty($nonEditablePicklistValues[$id])) {
-            try{
-                $status = $moduleModel->renamePickListValues($pickListFieldName, $oldValue, $newValue, $moduleName, $id, $rolesList, $color);
-                $response->setResult(array('success',$status));
-            } catch (Exception $e) {
-                $response->setError($e->getCode(), $e->getMessage());
-            }
-        } else {
-            if($color) {
-                $status = $moduleModel->updatePicklistColor($pickListFieldName, $id, $color);
-                $response->setResult(array('success',$status));
-            }
-        }
-        
-        $response->emit();
-    }
+         
+    public function validateRequest(Vtiger_Request $request) { 
+        $request->validateWriteAccess(); 
+    } 
 }

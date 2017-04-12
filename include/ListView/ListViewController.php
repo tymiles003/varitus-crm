@@ -20,19 +20,19 @@ class ListViewController {
 	 *
 	 * @var QueryGenerator
 	 */
-	protected $queryGenerator;
+	private $queryGenerator;
 	/**
 	 *
 	 * @var PearDatabase
 	 */
-	protected $db;
-	protected $nameList;
-	protected $typeList;
-	protected $ownerNameList;
-	protected $user;
-	protected $picklistValueMap;
-	protected $picklistRoleMap;
-	protected $headerSortingEnabled;
+	private $db;
+	private $nameList;
+	private $typeList;
+	private $ownerNameList;
+	private $user;
+	private $picklistValueMap;
+	private $picklistRoleMap;
+	private $headerSortingEnabled;
 	public function __construct($db, $user, $generator) {
 		$this->queryGenerator = $generator;
 		$this->db = $db;
@@ -66,19 +66,10 @@ class ListViewController {
 		$fieldName = $field->getFieldName();
 		$rowCount = $this->db->num_rows($result);
 
-		$columnName = $field->getColumnName();
-		if($field->referenceFieldName) {
-			preg_match('/(\w+) ; \((\w+)\) (\w+)/', $field->referenceFieldName, $matches);
-			if (count($matches) != 0) {
-				list($full, $parentReferenceFieldName, $referenceModule, $referenceFieldName) = $matches;
-			}
-			$columnName = $parentReferenceFieldName.$referenceFieldName;
-		}
-
 		$idList = array();
 		for ($i = 0; $i < $rowCount; $i++) {
-			$id = $this->db->query_result($result, $i, $columnName);
-			if (!isset($this->nameList[$fieldName][$id]) && $id != null) {
+			$id = $this->db->query_result($result, $i, $field->getColumnName());
+			if (!isset($this->nameList[$fieldName][$id])) {
 				$idList[$id] = $id;
 			}
 		}
@@ -87,36 +78,29 @@ class ListViewController {
 		if(count($idList) == 0) {
 			return;
 		}
-		if($parentReferenceFieldName) {
-			$moduleList = $referenceFieldInfoList[$field->referenceFieldName];
-		} else {
-			$moduleList = $referenceFieldInfoList[$fieldName];
-		}
-
-		if($moduleList) {
-			foreach ($moduleList as $module) {
-				$meta = $this->queryGenerator->getMeta($module);
-				if ($meta->isModuleEntity()) {
-					if($module == 'Users') {
-						$nameList = getOwnerNameList($idList);
-					} else {
-						//TODO handle multiple module names overriding each other.
-						$nameList = getEntityName($module, $idList);
-					}
+		$moduleList = $referenceFieldInfoList[$fieldName];
+		foreach ($moduleList as $module) {
+			$meta = $this->queryGenerator->getMeta($module);
+			if ($meta->isModuleEntity()) {
+				if($module == 'Users') {
+					$nameList = getOwnerNameList($idList);
 				} else {
-					$nameList = vtws_getActorEntityName($module, $idList);
+					//TODO handle multiple module names overriding each other.
+					$nameList = getEntityName($module, $idList);
 				}
-				$entityTypeList = array_intersect(array_keys($nameList), $idList);
-				foreach ($entityTypeList as $id) {
-					$this->typeList[$id] = $module;
-				}
-				if(empty($this->nameList[$fieldName])) {
-					$this->nameList[$fieldName] = array();
-				}
-				foreach ($entityTypeList as $id) {
-					$this->typeList[$id] = $module;
-					$this->nameList[$fieldName][$id] = $nameList[$id];
-				}
+			} else {
+				$nameList = vtws_getActorEntityName($module, $idList);
+			}
+			$entityTypeList = array_intersect(array_keys($nameList), $idList);
+			foreach ($entityTypeList as $id) {
+				$this->typeList[$id] = $module;
+			}
+			if(empty($this->nameList[$fieldName])) {
+				$this->nameList[$fieldName] = array();
+			}
+			foreach ($entityTypeList as $id) {
+				$this->typeList[$id] = $module;
+				$this->nameList[$fieldName][$id] = $nameList[$id];
 			}
 		}
 	}
@@ -140,41 +124,28 @@ class ListViewController {
 		require('user_privileges/user_privileges_'.$this->user->id.'.php');
 		$fields = $this->queryGenerator->getFields();
 		$meta = $this->queryGenerator->getMeta($this->queryGenerator->getModule());
-		$baseModule = $module;
+
 		$moduleFields = $this->queryGenerator->getModuleFields();
 		$accessibleFieldList = array_keys($moduleFields);
 		$listViewFields = array_intersect($fields, $accessibleFieldList);
 
 		$referenceFieldList = $this->queryGenerator->getReferenceFieldList();
-		if($referenceFieldList) {
-			foreach ($referenceFieldList as $fieldName) {
-				if (in_array($fieldName, $listViewFields)) {
-					$field = $moduleFields[$fieldName];
-					$this->fetchNameList($field, $result);
-				}
+		foreach ($referenceFieldList as $fieldName) {
+			if (in_array($fieldName, $listViewFields)) {
+				$field = $moduleFields[$fieldName];
+				$this->fetchNameList($field, $result);
 			}
 		}
 
 		$db = PearDatabase::getInstance();
 		$rowCount = $db->num_rows($result);
 		$ownerFieldList = $this->queryGenerator->getOwnerFieldList();
-
 		foreach ($ownerFieldList as $fieldName) {
 			if (in_array($fieldName, $listViewFields)) {
 				$field = $moduleFields[$fieldName];
 				$idList = array();
-
-				//if the assigned to is related to the reference field
-				preg_match('/(\w+) ; \((\w+)\) (\w+)/', $fieldName, $matches);
-				if(count($matches) > 0) {
-					list($full, $referenceParentField, $module, $fieldName) = $matches;
-					$columnName = strtolower($referenceParentField.$fieldName);
-				} else {
-					$columnName = $field->getColumnName();
-				}
-
 				for ($i = 0; $i < $rowCount; $i++) {
-					$id = $this->db->query_result($result, $i, $columnName);
+					$id = $this->db->query_result($result, $i, $field->getColumnName());
 					if (!isset($this->ownerNameList[$fieldName][$id])) {
 						$idList[] = $id;
 					}
@@ -193,45 +164,21 @@ class ListViewController {
 				}
 			}
 		}
-		$fileTypeFields = array();
+
 		foreach ($listViewFields as $fieldName) {
 			$field = $moduleFields[$fieldName];
 			if(!$is_admin && ($field->getFieldDataType() == 'picklist' ||
 					$field->getFieldDataType() == 'multipicklist')) {
 				$this->setupAccessiblePicklistValueList($fieldName);
 			}
-			if($field->getUIType() == '61') {
-				$fileTypeFields[] = $field->getColumnName();
-			}
 		}
+        
+        $moduleInstance = Vtiger_Module_Model::getInstance("PBXManager");
+        if($moduleInstance && $moduleInstance->isActive()) {
+            $outgoingCallPermission = PBXManager_Server_Model::checkPermissionForOutgoingCall();
+        }
 
-		//performance optimization for uitype 61
-		$attachmentsCache = array();
-		$attachmentIds = array();
-		if(count($fileTypeFields)) {
-			foreach($fileTypeFields as $fileTypeField) {
-				for ($i = 0; $i < $rowCount; ++$i) {
-					$attachmentId = $db->query_result($result,$i,$fileTypeField);
-					if($attachmentId) $attachmentIds[] = $attachmentId;
-				}
-			}
-		}
-		if(count($attachmentIds)) {
-			$getAttachmentsNamesSql = 'SELECT attachmentsid,name FROM vtiger_attachments WHERE attachmentsid IN (' . generateQuestionMarks($attachmentIds) . ')';
-			$attachmentNamesRes = $db->pquery($getAttachmentsNamesSql,$attachmentIds);
-			$attachmentNamesRowCount = $db->num_rows($attachmentNamesRes);
-			for($i=0;$i<$attachmentNamesRowCount;$i++) {
-				$attachmentsName = $db->query_result($attachmentNamesRes,$i,'name');
-				$attachmentsId = $db->query_result($attachmentNamesRes,$i,'attachmentsid');
-				$attachmentsCache[$attachmentsId] = decode_html($attachmentsName);
-			}
-		}
-
-		$moduleInstance = Vtiger_Module_Model::getInstance("PBXManager");
-		if($moduleInstance && $moduleInstance->isActive()) {
-			$outgoingCallPermission = PBXManager_Server_Model::checkPermissionForOutgoingCall();
-			$clickToCallLabel = vtranslate("LBL_CLICK_TO_CALL");
-		}
+		$useAsterisk = get_use_asterisk($this->user->id);
 
 		$data = array();
 		for ($i = 0; $i < $rowCount; ++$i) {
@@ -241,36 +188,21 @@ class ListViewController {
 				$moduleTableIndexList = $meta->getEntityTableIndexList();
 				$baseTableIndex = $moduleTableIndexList[$baseTable];
 
-				$baseRecordId = $recordId = $db->query_result($result,$i,$baseTableIndex);
+				$recordId = $db->query_result($result,$i,$baseTableIndex);
 			}else {
-				$baseRecordId = $recordId = $db->query_result($result,$i,"id");
+				$recordId = $db->query_result($result,$i,"id");
 			}
 			$row = array();
 
 			foreach ($listViewFields as $fieldName) {
-				$recordId = $baseRecordId;
-				$rawFieldName = $fieldName;
 				$field = $moduleFields[$fieldName];
 				$uitype = $field->getUIType();
-				$fieldDataType = $field->getFieldDataType();
-				// for reference fields read the value differently
-				preg_match('/(\w+) ; \((\w+)\) (\w+)/', $fieldName, $matches);
-				if(count($matches) > 0) {
-					list($full, $referenceParentField, $module, $fieldName) = $matches;
-					$matches = null;
-					$rawValue = $this->db->query_result($result, $i, strtolower($referenceParentField.$fieldName));
-					//if the field is related to reference module's field, then we might need id of that record for example emails field
-					$recordId = $this->db->query_result($result, $i, strtolower($referenceParentField.$fieldName).'_id');
-				} else {
-					$rawValue = $this->db->query_result($result, $i, $field->getColumnName());
-					//if not reference module field then we need to reset the module
-					$module = $baseModule;
-				}
+				$rawValue = $this->db->query_result($result, $i, $field->getColumnName());
 
 				if(in_array($uitype,array(15,33,16))){
-					$value = html_entity_decode($rawValue,ENT_QUOTES,$default_charset); 
-				} else { 
-					$value = $rawValue; 
+					$value = html_entity_decode($rawValue,ENT_QUOTES,$default_charset);
+				} else {
+					$value = $rawValue;
 				}
 
 				if($module == 'Documents' && $fieldName == 'filename') {
@@ -284,12 +216,13 @@ class ListViewController {
 					$fileId = $db->query_result($fileIdRes,0,'attachmentsid');
 					if($fileName != '' && $status == 1) {
 						if($downloadType == 'I' ) {
-							$value = '<a href="index.php?module=Documents&action=DownloadFile&record='.$recordId.'&fileid='.$fileId.'"'.
+							$value = '<a onclick="Javascript:Documents_Index_Js.updateDownloadCount(\'index.php?module=Documents&action=UpdateDownloadCount&record='.$recordId.'\');"'.
+									' href="index.php?module=Documents&action=DownloadFile&record='.$recordId.'&fileid='.$fileId.'"'.
 									' title="'.	getTranslatedString('LBL_DOWNLOAD_FILE',$module).
 									'" >'.textlength_check($value).
 									'</a>';
 						} elseif($downloadType == 'E') {
-							$value = '<a onclick="event.stopPropagation()"'.
+							$value = '<a onclick="Javascript:Documents_Index_Js.updateDownloadCount(\'index.php?module=Documents&action=UpdateDownloadCount&record='.$recordId.'\');"'.
 									' href="'.$fileName.'" target="_blank"'.
 									' title="'.	getTranslatedString('LBL_DOWNLOAD_FILE',$module).
 									'" >'.textlength_check($value).
@@ -297,8 +230,6 @@ class ListViewController {
 						} else {
 							$value = ' --';
 						}
-					} else{
-						$value = textlength_check($value);
 					}
 					$value = $fileicon.$value;
 				} elseif($module == 'Documents' && $fieldName == 'filesize') {
@@ -334,12 +265,12 @@ class ListViewController {
 					}else {
 						$value = ' --';
 					}
-				}elseif ($fieldDataType == 'picklist') {
+				}elseif ($field->getFieldDataType() == 'picklist') {
 					//not check for permissions for non admin users for status and activity type field
-					if($module == 'Calendar' && ($fieldName == 'taskstatus' || $fieldName == 'eventstatus' || $fieldName == 'activitytype')) {
-						$value = Vtiger_Language_Handler::getTranslatedString($value,$module);
+                    if($module == 'Calendar' && ($fieldName == 'taskstatus' || $fieldName == 'eventstatus' || $fieldName == 'activitytype')) {
+                        $value = Vtiger_Language_Handler::getTranslatedString($value,$module);
 						$value = textlength_check($value);
-					}
+                    }
 					else if ($value != '' && !$is_admin && $this->picklistRoleMap[$fieldName] &&
 							!in_array($value, $this->picklistValueMap[$fieldName]) && strtolower($value) != '--none--' && strtolower($value) != 'none' ) {
 						$value = "<font color='red'>". Vtiger_Language_Handler::getTranslatedString('LBL_NOT_ACCESSIBLE',
@@ -348,22 +279,23 @@ class ListViewController {
 						$value =  Vtiger_Language_Handler::getTranslatedString($value,$module);
 						$value = textlength_check($value);
 					}
-				}elseif($fieldDataType == 'date' || $fieldDataType == 'datetime') {
-					if($value != '' && $value != '0000-00-00' && $value != 'NULL') {
+				}elseif($field->getFieldDataType() == 'date' || $field->getFieldDataType() == 'datetime') {
+					if($value != '' && $value != '0000-00-00') {
+						$fieldDataType = $field->getFieldDataType();
 						if($module == 'Calendar' &&($fieldName == 'date_start' || $fieldName == 'due_date')) {
-							if($fieldName == 'date_start') {
+                            if($fieldName == 'date_start') {
 								$timeField = 'time_start';
 							}else if($fieldName == 'due_date') {
 								$timeField = 'time_end';
 							}
-							$timeFieldValue = $this->db->query_result($result, $i, $timeField);
-							if(!empty($timeFieldValue)){
-								$value .= ' '. $timeFieldValue;
-								//TO make sure it takes time value as well
-								$fieldDataType = 'datetime';
-							}
+                            $timeFieldValue = $this->db->query_result($result, $i, $timeField);
+                            if(!empty($timeFieldValue)){
+                                $value .= ' '. $timeFieldValue;
+                                //TO make sure it takes time value as well
+                                $fieldDataType = 'datetime';
+                            }
 						}
-						if($fieldDataType == 'datetime' && $value != '0000-00-00 00:00:00') {
+						if($fieldDataType == 'datetime') {
 							$value = Vtiger_Datetime_UIType::getDateTimeValue($value);
 						} else if($fieldDataType == 'date') {
 							$date = new DateTimeField($value);
@@ -372,18 +304,14 @@ class ListViewController {
 					} elseif ($value == '0000-00-00') {
 						$value = '';
 					}
-				} elseif($fieldDataType == 'time') {
+				} elseif($field->getFieldDataType() == 'time') {
 					if(!empty($value)){
-						if(($module == 'Calendar') && ($fieldName == 'time_start' || $fieldName == 'time_end')) {
-							$time = new DateTimeField(date('Y-m-d').' '.$value);
-							$value = $time->getDisplayTime();
-						}
 						$userModel = Users_Privileges_Model::getCurrentUserModel();
 						if($userModel->get('hour_format') == '12'){
 							$value = Vtiger_Time_UIType::getTimeValueInAMorPM($value);
 						}
 					}
-				} elseif($fieldDataType == 'currency') {
+				} elseif($field->getFieldDataType() == 'currency') {
 					if($value != '') {
 						if($field->getUIType() == 72) {
 							if($fieldName == 'unit_price') {
@@ -400,44 +328,43 @@ class ListViewController {
 						} else {
 							if (!empty($value)) {
 								$value = CurrencyField::convertToUserFormat($value);
-								$userCurrencyInfo = getCurrencySymbolandCRate($this->user->currency_id);
-								$row['userCurrencySymbol'] = $userCurrencyInfo['symbol'];
 							}
 						}
 					}
-				} elseif($fieldDataType == 'url') {
-					$matchPattern = "^[\w]+:\/\/^";
-					preg_match($matchPattern, $rawValue, $matches);
-					if(!empty ($matches[0])){
-						$value = '<a class="urlField cursorPointer" href="'.$rawValue.'" target="_blank">'.textlength_check($value).'</a>';
-					}else{
-						$value = '<a class="urlField cursorPointer" href="http://'.$rawValue.'" target="_blank">'.textlength_check($value).'</a>';
-					}
-				} elseif ($fieldDataType == 'email') {
+				} elseif($field->getFieldDataType() == 'url') {
+                    $matchPattern = "^[\w]+:\/\/^";
+                    preg_match($matchPattern, $rawValue, $matches);
+                    if(!empty ($matches[0])){
+                        $value = '<a class="urlField cursorPointer" href="'.$rawValue.'" target="_blank">'.textlength_check($value).'</a>';
+                    }else{
+                        $value = '<a class="urlField cursorPointer" href="http://'.$rawValue.'" target="_blank">'.textlength_check($value).'</a>';
+                    }
+				} elseif ($field->getFieldDataType() == 'email') {
 					global $current_user;
 					if($current_user->internal_mailer == 1){
 						//check added for email link in user detailview
-						$value = "<a class='emailField' data-rawvalue=\"$rawValue\" onclick=\"Vtiger_Helper_Js.getInternalMailer($recordId,".
+						$value = "<a class='emailField' onclick=\"Vtiger_Helper_Js.getInternalMailer($recordId,".
 						"'$fieldName','$module');\">".textlength_check($value)."</a>";
 					} else {
-						$value = '<a class="emailField" data-rawvalue="'.$rawValue.'" href="mailto:'.$rawValue.'">'.textlength_check($value).'</a>';
+						$value = '<a class="emailField" href="mailto:'.$rawValue.'">'.textlength_check($value).'</a>';
 					}
-				} elseif($fieldDataType == 'boolean') {
+				} elseif($field->getFieldDataType() == 'boolean') {
 					if ($value === 'on') {
 						$value = 1;
 					} else if ($value == 'off') {
 						$value = 0;
 					}
 					if($value == 1) {
-						$value = vtranslate('LBL_YES',$module);
+						$value = getTranslatedString('yes',$module);
 					} elseif($value == 0) {
-						$value = vtranslate('LBL_NO',$module);
+						$value = getTranslatedString('no',$module);
 					} else {
 						$value = '--';
 					}
 				} elseif($field->getUIType() == 98) {
 					$value = '<a href="index.php?module=Roles&parent=Settings&view=Edit&record='.$value.'">'.textlength_check(getRoleName($value)).'</a>';
-				} elseif($fieldDataType == 'multipicklist') {
+				} elseif($field->getFieldDataType() == 'multipicklist') {
+					$value = ($value != "") ? str_replace(' |##| ',', ',$value) : "";
 					if(!$is_admin && $value != '') {
 						$valueArray = ($rawValue != "") ? explode(' |##| ',$rawValue) : array();
 						$notaccess = '<font color="red">'.getTranslatedString('LBL_NOT_ACCESSIBLE',
@@ -445,7 +372,6 @@ class ListViewController {
 						$tmp = '';
 						$tmpArray = array();
 						foreach($valueArray as $index => $val) {
-							$val = decode_html($val);
 							if(!$listview_max_textlength ||
 									!(strlen(preg_replace("/(<\/?)(\w+)([^>]*>)/i","",$tmp)) >
 											$listview_max_textlength)) {
@@ -464,24 +390,16 @@ class ListViewController {
 						}
 						$value = implode(', ', $tmpArray);
 						$value = textlength_check($value);
-					} else if ($value != '') {
-						$moduleName = getTabModuleName($field->getTabId());
-						$value = explode(' |##| ', $value);
-						foreach ($value as $key => $val) {
-							$value[$key] = vtranslate($val, $moduleName);
-						}
-						$value = implode(' |##| ', $value);
-						$value = str_replace(' |##| ', ', ', $value);
 					}
-				} elseif ($fieldDataType == 'skype') {
+				} elseif ($field->getFieldDataType() == 'skype') {
 					$value = ($value != "") ? "<a href='skype:$value?call'>".textlength_check($value)."</a>" : "";
 				} elseif ($field->getUIType() == 11) {
-					if($outgoingCallPermission && !empty($value)) {
-						$phoneNumber = $value;
-						$value = $phoneNumber;
-					}else {
-						$value = textlength_check($value);
-					}
+                    if($outgoingCallPermission && !empty($value)) {
+                        $phoneNumber = preg_replace('/[-()\s+]/', '',$value);
+                        $value = '<a class="phoneField" data-value="'.$phoneNumber.'" record="'.$recordId.'" onclick="Vtiger_PBXManager_Js.registerPBXOutboundCall(\''.$phoneNumber.'\', '.$recordId.')">'.textlength_check($value).'</a>';
+                    }else {
+                        $value = textlength_check($value);
+                    }
 				} elseif($field->getFieldDataType() == 'reference') {
 					$referenceFieldInfoList = $this->queryGenerator->getReferenceFieldInfoList();
 					$moduleList = $referenceFieldInfoList[$fieldName];
@@ -493,14 +411,14 @@ class ListViewController {
 					if(!empty($value) && !empty($this->nameList[$fieldName]) && !empty($parentModule)) {
 						$parentMeta = $this->queryGenerator->getMeta($parentModule);
 						$value = textlength_check($this->nameList[$fieldName][$value]);
-						if ($parentMeta->isModuleEntity() && $parentModule != "Users" && $parentModule != 'SLA') {
-							$value = "<a class='js-reference-display-value' href='?module=$parentModule&view=Detail&".
+						if ($parentMeta->isModuleEntity() && $parentModule != "Users") {
+							$value = "<a href='?module=$parentModule&view=Detail&".
 								"record=$rawValue' title='".getTranslatedString($parentModule, $parentModule)."'>$value</a>";
 						}
 					} else {
 						$value = '--';
 					}
-				} elseif($fieldDataType == 'owner' || $fieldDataType == 'ownergroup') {
+				} elseif($field->getFieldDataType() == 'owner') {
 					$value = textlength_check($this->ownerNameList[$fieldName][$value]);
 				} elseif ($field->getUIType() == 25) {
 					//TODO clean request object reference.
@@ -519,22 +437,7 @@ class ListViewController {
 						$value = vt_suppressHTMLTags(implode(',',$json->decode($temp_val)));
 					}
 				} elseif ( in_array($uitype,array(7,9,90)) ) {
-					$value = "<span align='right'>".textlength_check($value)."</span>";
-				} elseif($field && $field->isNameField) {
-					$value = "<a href='?module=$field->moduleName&view=Detail&".
-								"record=$recordId' title='".vtranslate($field->moduleName, $field->moduleName)."'>$value</a>";
-				} elseif($field->getUIType() == 61) {
-					$attachmentId = (int)$value;
-					$displayValue = '--';
-					if($attachmentId) {
-						$displayValue = $attachmentName = $attachmentsCache[$attachmentId];
-						$url = 'index.php?module='.$module.
-							   '&action=DownloadAttachment&record='.$recordId.'&attachmentid='.$attachmentId;
-						$displayValue = '<a href="'.$url.'" title="'.vtranslate('LBL_DOWNLOAD_FILE',$module).'">'.
-											textlength_check($attachmentName).
-										'</a>';
-					}
-					$value = $displayValue;
+					$value = "<span align='right'>".textlength_check($value)."</div>";
 				} else {
 					$value = textlength_check($value);
 				}
@@ -543,9 +446,9 @@ class ListViewController {
 //				$value = "$value <span type='vtlib_metainfo' vtrecordid='{$recordId}' vtfieldname=".
 //					"'{$fieldName}' vtmodule='$module' style='display:none;'></span>";
 //				// END
-				$row[$rawFieldName] = $value;
+				$row[$fieldName] = $value;
 			}
-			$data[$baseRecordId] = $row;
+			$data[$recordId] = $row;
 		}
 		return $data;
 	}

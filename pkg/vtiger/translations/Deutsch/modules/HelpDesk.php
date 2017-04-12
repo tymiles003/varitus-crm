@@ -39,7 +39,6 @@ $languageStrings = array(
 	'LBL_SEVERITY'                 => 'Gewichtung'                  , 
 	'LBL_CONVERT_FAQ'              => 'Convert to FAQ'              , 
 	'LBL_RELATED_TO'               => 'bezogen auf'                 ,
-    'Related To'                   => 'Bezogen auf'                 ,
 
     //added to support i18n in ticket mails
     'Hi' => 'Hallo',
@@ -85,10 +84,4 @@ $languageStrings = array(
     'HelpDesk ID' => 'Ticket ID',
 	'Ticket ID' => 'Ticketnummer',
 	'LBL_TICKET_NUMBER' => 'Ticket Nummer',
-
-  'Contact Name' => 'Kontakt Name',
-  'LBL_ADD_DOCUMENT' => 'Dokument Hinzufügen',
-  'LBL_OPEN_TICKETS' => 'Offene Tickets',
-  'LBL_CREATE_TICKET' => 'Ticket Erstellen',
-
 );

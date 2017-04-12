@@ -23,14 +23,12 @@ class Vtiger_Currency_UIType extends Vtiger_Base_UIType {
 	 * @param <Object> $value
 	 * @return <Object>
 	 */
-	public function getDisplayValue($value, $skipConversion = false) {
+	public function getDisplayValue($value) {
 		$uiType = $this->get('field')->get('uitype');
 		if ($value) {
 			if ($uiType == 72) {
 				// Some of the currency fields like Unit Price, Totoal , Sub-total - doesn't need currency conversion during save
 				$value = CurrencyField::convertToUserFormat($value, null, true);
-			} else if($skipConversion === true){
-				$value = CurrencyField::convertToUserFormat($value, null, true, true);
 			} else {
 				$value = CurrencyField::convertToUserFormat($value);
 			}
@@ -47,19 +45,19 @@ class Vtiger_Currency_UIType extends Vtiger_Base_UIType {
 	public function getUserRequestValue($value) {
 		return $this->getDisplayValue($value);
 	}
-
-	/**
+    
+    /**
 	 * Function to get the DB Insert Value, for the current field type with given User Value
 	 * @param <Object> $value
 	 * @return <Object>
 	 */
 	public function getDBInsertValue($value) {
-		$uiType = $this->get('field')->get('uitype');
-		if($uiType == 72) {
-			return self::convertToDBFormat($value,null,true);
-		}else {
-			return self::convertToDBFormat($value);
-		}
+        $uiType = $this->get('field')->get('uitype');
+        if($uiType == 72) {
+            return self::convertToDBFormat($value,null,true);
+        }else {
+            return self::convertToDBFormat($value);
+        }
 	}
 
 	/**
@@ -88,9 +86,9 @@ class Vtiger_Currency_UIType extends Vtiger_Base_UIType {
 	 * @param <String> $value
 	 * @return <String>
 	 */
-	public function getEditViewDisplayValue($value, $skipConversion = false) {
+	public function getEditViewDisplayValue($value) {
 		if(!empty($value))
-			return $this->getDisplayValue($value, $skipConversion);
-		return $value;
+			return $this->getDisplayValue($value);
+        return $value;
 	}
 }

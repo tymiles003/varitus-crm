@@ -31,9 +31,5 @@ class Vtiger_FileLocationType_UIType extends Vtiger_Base_UIType {
 		}
 		return vtranslate($value, 'Documents');
 	}
-    
-    public function getListSearchTemplateName() {
-        return 'uitypes/FilelocationtypeFieldSearchView.tpl';
-    }
 
 }

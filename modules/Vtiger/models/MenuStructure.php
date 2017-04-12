@@ -19,8 +19,6 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 	const TOP_MENU_INDEX = 'top';
 	const MORE_MENU_INDEX = 'more';
 
-	protected $menuGroupByParent = array();
-
 	/**
 	 * Function to get all the top menu models
 	 * @return <array> - list of Vtiger_Menu_Model instances
@@ -28,7 +26,7 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 	public function getTop() {
 		return $this->get(self::TOP_MENU_INDEX);
 	}
-
+	
 	/**
 	 * Function to get all the more menu models
 	 * @return <array> - Associate array of Parent name mapped to Vtiger_Menu_Model instances
@@ -50,21 +48,12 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 	public function getLimit() {
 		return $this->limit;
 	}
-
+	
 	/**
 	 * Function to determine if the structure should support responsive UI.
 	 */
 	public function getResponsiveMode() {
 		return $this->enableResponsiveMode;
-	}
-
-	public function getMenuGroupedByParent() {
-		return $this->menuGroupByParent;
-	}
-
-	public function setMenuGroupedByParent($structure) {
-		$this->menuGroupByParent = $structure;
-		return $this;
 	}
 
 	/**
@@ -76,7 +65,7 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 		$structureModel = new self();
 		$topMenuLimit = $structureModel->getResponsiveMode() ? 0 : $structureModel->getLimit();
 		$currentTopMenuCount = 0;
-		$menuGroupedListByParent = array();
+
 		$menuListArray = array();
 		$menuListArray[self::TOP_MENU_INDEX] = array();
 		$menuListArray[self::MORE_MENU_INDEX] = $structureModel->getEmptyMoreMenuList();
@@ -86,13 +75,12 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 				$menuListArray[self::TOP_MENU_INDEX][$menuModel->get('name')] = $menuModel;
 				$currentTopMenuCount++;
 			}
-
-			$parent = ucfirst(strtolower($menuModel->get('parent')));
+			
+			$parent = $menuModel->get('parent');
 			if($parent == 'Sales' || $parent == 'Marketing'){
 				$parent = 'MARKETING_AND_SALES';
 			}
 			$menuListArray[self::MORE_MENU_INDEX][strtoupper($parent)][$menuModel->get('name')] = $menuModel;
-			$menuGroupedListByParent[strtoupper($parent)][$menuModel->get('name')] = $menuModel;
 		}
 
 		if(!empty($selectedMenu) && !array_key_exists($selectedMenu, $menuListArray[self::TOP_MENU_INDEX])) {
@@ -101,16 +89,16 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 				$menuListArray[self::TOP_MENU_INDEX][$selectedMenuModel->get('name')] = $selectedMenuModel;
 			}
 		}
-
+		
 		// Apply custom comparator
 		foreach ($menuListArray[self::MORE_MENU_INDEX] as $parent => &$values) {
 			uksort($values, array('Vtiger_MenuStructure_Model', 'sortMenuItemsByProcess'));
 		}
 		//uksort($menuListArray[self::TOP_MENU_INDEX], array('Vtiger_MenuStructure_Model', 'sortMenuItemsByProcess'));
-
-		return $structureModel->setData($menuListArray)->setMenuGroupedByParent($menuGroupedListByParent);
+		
+		return $structureModel->setData($menuListArray);
 	}
-
+	
 	/**
 	 * Custom comparator to sort the menu items by process.
 	 * Refer: http://php.net/manual/en/function.uksort.php
@@ -141,9 +129,7 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 				'Calendar',
 				'Documents',
 				'SMSNotifier',
-				'RecycleBin',
-				'ProjectTask',
-				'ProjectMilestone'
+				'RecycleBin'				
 			);
 		}
 		$apos  = array_search($a, $order);
@@ -157,74 +143,6 @@ class Vtiger_MenuStructure_Model extends Vtiger_Base_Model {
 
 
 	private function getEmptyMoreMenuList(){
-		return array('CONTACT'=>array(), 'MARKETING_AND_SALES'=>array(),'SUPPORT'=>array(),'INVENTORY'=>array(),'TOOLS'=>array(),'ANALYTICS'=>array());
-	}
-
-	public static function getIgnoredModules() {
-		return array('Calendar', 'Documents', 'MailManager', 'Rss', 'Portal', 'RecycleBin', 'SMSNotifier', 'EmailTemplates', 'Reports');
-	}
-
-	function regroupMenuByParent($menuGroupedByParent) {
-		$editionsToAppMap = array(
-									'Contacts'		=> array('MARKETING', 'SALES', 'INVENTORY', 'SUPPORT', 'PROJECT'),
-									'Accounts'		=> array('MARKETING', 'SALES', 'INVENTORY', 'SUPPORT', 'PROJECT'),
-									'Campaigns'		=> array('MARKETING'),
-									'Leads'			=> array('MARKETING'),
-									'Potentials'	=> array('SALES'),
-									'Quotes'		=> array('SALES'),
-									'Invoice'		=> array('INVENTORY'),
-									'HelpDesk'		=> array('SUPPORT'),
-									'Faq'			=> array('SUPPORT'),
-									'Assets'		=> array('SUPPORT'),
-									'Products'		=> array('SALES', 'INVENTORY'),
-									'Services'		=> array('SALES', 'INVENTORY'),
-									'Pricebooks'	=> array('INVENTORY'),
-									'Vendors'		=> array('INVENTORY'),
-									'PurchaseOrder'	=> array('INVENTORY'),
-									'SalesOrder'	=> array('INVENTORY'),
-									'Project'		=> array('PROJECT'),
-									'ProjectTask'	=> array('PROJECT'),
-									'ProjectMilestone'	=> array('PROJECT'),
-									'ServiceContracts'	=> array('SUPPORT'),
-							);
-
-		$oldToNewAppMap = Vtiger_MenuStructure_Model::getOldToNewAppMapping();
-		$ignoredModules = self::getIgnoredModules();
-		$regroupMenuByParent = array();
-		foreach($menuGroupedByParent as $appName => $appModules) {
-			foreach ($appModules as $moduleName => $moduleModel) {
-				if(!empty($editionsToAppMap[$moduleName])) {
-					foreach ($editionsToAppMap[$moduleName] as $app) {
-						$regroupMenuByParent[$app][$moduleName] = $moduleModel;
-					}
-				} else {
-					if(!in_array($moduleName, $ignoredModules)) {
-						$app = $oldToNewAppMap[$appName];
-						$regroupMenuByParent[$app][$moduleName] = $moduleModel;
-					}                
-				}
-			}
-		}
-
-		return $regroupMenuByParent;
-	}
-
-	public static function getOldToNewAppMapping() {
-		$oldToNewAppMap = array(
-							'CONTACT'				=> 'SALES',
-							'MARKETING_AND_SALES'	=> 'MARKETING',
-							'INVENTORY'				=> 'INVENTORY',
-							'SUPPORT'				=> 'SUPPORT',
-							'TOOLS'					=> 'PROJECT'
-						  );
-		return $oldToNewAppMap;
-	}
-
-	/**
-	 * Function to get the app menu items in order
-	 * @return <array>
-	 */
-	public static function getAppMenuList(){
-		return array('MARKETING','SALES','INVENTORY','SUPPORT','PROJECT');
+		return array('MARKETING_AND_SALES'=>array(),'SUPPORT'=>array(),'INVENTORY'=>array(),'TOOLS'=>array(),'ANALYTICS'=>array());
 	}
 }

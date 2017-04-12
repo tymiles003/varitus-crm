@@ -24,22 +24,17 @@ class ModTracker_Record_Model extends Vtiger_Record_Model {
 	 * @param <type> $limit - number of latest changes that need to retrieved
 	 * @return <array> - list of  ModTracker_Record_Model
 	 */
-	public static function getUpdates($parentRecordId, $pagingModel,$moduleName) {
-		if($moduleName == 'Calendar') {
-			if(getActivityType($parentRecordId) != 'Task') {
-				$moduleName = 'Events';
-			}
-		}
+	public static function getUpdates($parentRecordId, $pagingModel) {
 		$db = PearDatabase::getInstance();
 		$recordInstances = array();
 
 		$startIndex = $pagingModel->getStartIndex();
 		$pageLimit = $pagingModel->getPageLimit();
-
-		$listQuery = "SELECT * FROM vtiger_modtracker_basic WHERE crmid = ? AND module = ? ".
+                
+		$listQuery = "SELECT * FROM vtiger_modtracker_basic WHERE crmid = ? ".
 						" ORDER BY changedon DESC LIMIT $startIndex, $pageLimit";
 
-		$result = $db->pquery($listQuery, array($parentRecordId, $moduleName));
+		$result = $db->pquery($listQuery, array($parentRecordId));
 		$rows = $db->num_rows($result);
 
 		for ($i=0; $i<$rows; $i++) {
@@ -52,13 +47,7 @@ class ModTracker_Record_Model extends Vtiger_Record_Model {
 	}
 
 	function setParent($id, $moduleName) {
-		if(!Vtiger_Util_Helper::checkRecordExistance($id)) {
-			$this->parent = Vtiger_Record_Model::getInstanceById($id, $moduleName);
-		} else {
-			$this->parent = Vtiger_Record_Model::getCleanInstance($moduleName);
-			$this->parent->id = $id;
-			$this->parent->setId($id);
-		}
+		$this->parent = Vtiger_Record_Model::getInstanceById($id, $moduleName);
 	}
 
 	function getParent() {
@@ -116,7 +105,7 @@ class ModTracker_Record_Model extends Vtiger_Record_Model {
 			$rows = $db->num_rows($result);
 			for($i=0; $i<$rows; $i++) {
 				$data = $db->query_result_rowdata($result, $i);
-				$row = array_map('decode_html', $data);
+				$row = array_map('html_entity_decode', $data);
 
 				if($row['fieldname'] == 'record_id' || $row['fieldname'] == 'record_module') continue;
 

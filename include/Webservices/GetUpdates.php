@@ -10,7 +10,6 @@
 require_once 'include/Webservices/Utils.php';
 require_once 'include/Webservices/ModuleTypes.php';
 require_once 'include/utils/CommonUtils.php';
-require_once('include/utils/GetUserGroups.php');
 require_once 'include/Webservices/DescribeObject.php';
 
 	function vtws_sync($mtime,$elementType,$syncType,$user){
@@ -46,10 +45,14 @@ require_once 'include/Webservices/DescribeObject.php';
 		$ownerIds = array($user->id);
         // To get groupids in which this user exist
         if ($userAndGroupSync) {
-            $userGroups = new GetUserGroups();
-            $userGroups->getAllUserGroups($user->id);
-            $ownerIds = array_merge($ownerIds, $userGroups->user_groups);
+        $groupresult = $adb->pquery("select groupid from vtiger_users2group where userid=?", array($user->id));
+        $numOfRows = $adb->num_rows($groupresult);
+        if ($numOfRows > 0) {
+            for ($i = 0; $i < $numOfRows; $i++) {
+                $ownerIds[count($ownerIds)] = $adb->query_result($groupresult, $i, "groupid");
+            }
         }
+    }
         // End
     
         
@@ -168,11 +171,6 @@ require_once 'include/Webservices/DescribeObject.php';
 				$params = array_merge($params,$ownerIds);
 			}
 			$fromClause.= ' ) vtiger_ws_sync ON (vtiger_crmentity.crmid = vtiger_ws_sync.crmid)';
-			if ($elementType == 'Events') {
-				// If we have more than one contact attached to Vtiger Event then we are getting duplicates
-				$moduleFocus = CRMEntity::getInstance('Activity');
-				$fromClause .= " GROUP BY $moduleFocus->table_name.$moduleFocus->table_index";
-			}
 			$q = $selectClause." ".$fromClause;
 			$result = $adb->pquery($q, $params);
 			$recordDetails = array();

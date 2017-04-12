@@ -27,9 +27,6 @@ $languageStrings = array(
 	'SINGLE_Groups'                => 'Group'                       , // TODO: Review
 	'SINGLE_Roles'                 => 'Role'                        , // TODO: Review
 	'SINGLE_RoleAndSubordinates'   => 'RoleAndSubordinate'          , // TODO: Review
-
-  'SharingAccess' => 'Le Regole Di Condivisione',
-
 );
 $jsLanguageStrings = array(
 	'JS_CUSTOM_RULE_SAVED_SUCCESSFULLY' => 'Custom Sharing Rule Saved Successfully', // TODO: Review

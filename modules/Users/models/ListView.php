@@ -24,35 +24,16 @@ class Users_ListView_Model extends Vtiger_ListView_Model {
 				'linktype' => 'LISTVIEWBASIC',
 				'linklabel' => 'LBL_ADD_RECORD',
 				'linkurl' => $this->getModule()->getCreateRecordUrl(),
-				'linkicon' => 'icon-plus'
+				'linkicon' => ''
 			)
 		);
 		foreach($basicLinks as $basicLink) {
 			$links['LISTVIEWBASIC'][] = Vtiger_Link_Model::getInstanceFromValues($basicLink);
 		}
-        
-        $links['LISTVIEW'] = array();
-        $advancedLinks = $this->getAdvancedLinks();
+		$advancedLinks = $this->getAdvancedLinks();
 		foreach($advancedLinks as $advancedLink) {
 			$links['LISTVIEW'][] = Vtiger_Link_Model::getInstanceFromValues($advancedLink);
 		}
-        
-        $usersList = Users_Record_Model::getActiveAdminUsers();
-        $settingLinks = array();
-        if(count($usersList) > 1) {
-            $changeOwnerLink = array(
-                'linktype' => 'LISTVIEWSETTING',
-				'linklabel' => 'LBL_CHANGE_OWNER',
-				'linkurl' => $this->getModule()->getChangeOwnerUrl(),
-				'linkicon' => ''
-            );
-            array_push($settingLinks, $changeOwnerLink);
-        }
-        if(count($settingLinks) > 0) {
-            foreach($settingLinks as $settingLink) {
-                $links['LISTVIEWSETTING'][] = Vtiger_Link_Model::getInstanceFromValues($settingLink);
-            }
-        }
 
 		return $links;
 	}
@@ -70,15 +51,14 @@ class Users_ListView_Model extends Vtiger_ListView_Model {
 	 * Functions returns the query
 	 * @return string
 	 */
-    public function getQuery() {
+     public function getQuery() {
             $listQuery = parent::getQuery();
+        //remove the status active condition since in users list view we need to consider inactive users as well
             $searchKey = $this->get('search_key');
-            
             if(!empty($searchKey)) {
                 $listQueryComponents = explode(" WHERE vtiger_users.status='Active' AND", $listQuery);
                 $listQuery = implode(' WHERE ', $listQueryComponents);
             }
-            $listQuery .= " AND (vtiger_users.user_name != 'admin' OR vtiger_users.is_owner = 1)";
             return $listQuery;
     }
 
@@ -89,7 +69,7 @@ class Users_ListView_Model extends Vtiger_ListView_Model {
 	 */
 	public function getListViewEntries($pagingModel) {
 		$queryGenerator = $this->get('query_generator');
-                
+
 		// Added as Users module do not have custom filters and id column is added by querygenerator.
 		$fields = $queryGenerator->getFields();
 		$fields[] = 'id';
@@ -97,8 +77,8 @@ class Users_ListView_Model extends Vtiger_ListView_Model {
 		
 		return parent::getListViewEntries($pagingModel);
 	}
-        
-    /*
+
+	/*
 	 * Function to give advance links of Users module
 	 * @return array of advanced links
 	 */
@@ -108,12 +88,12 @@ class Users_ListView_Model extends Vtiger_ListView_Model {
 		$advancedLinks = array();
 		$importPermission = Users_Privileges_Model::isPermitted($moduleModel->getName(), 'Import');
 		if($importPermission && $createPermission) {
-			$advancedLinks[] = array(
-                'linktype' => 'LISTVIEW',
-                'linklabel' => 'LBL_IMPORT',
-                'linkurl' => $moduleModel->getImportUrl(),
-                'linkicon' => ''
-			);
+                    $advancedLinks[] = array(
+                        'linktype' => 'LISTVIEW',
+                        'linklabel' => 'LBL_EXPORT',
+                        'linkurl' => 'javascript:Settings_Users_List_Js.triggerExportAction()',
+                        'linkicon' => ''
+                    );
 		}
 
 		return $advancedLinks;

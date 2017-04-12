@@ -103,7 +103,7 @@ $upload_dir = '_VT_UPLOADDIR_';
 
 // maximum file size for uploaded files in bytes also used when uploading import files
 // upload_maxsize default value = 3000000
-$upload_maxsize = 3145728;//3MB
+$upload_maxsize = 3000000;
 
 // flag to allow export functionality
 // 'all' to allow anyone to use exports 
@@ -203,7 +203,7 @@ if(isset($default_timezone) && function_exists('date_default_timezone_set')) {
 }
 
 //Set the default layout 
-$default_layout = 'v7';
+$default_layout = 'vlayout';
 
 include_once 'config.security.php';
 ?>

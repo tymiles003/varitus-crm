@@ -21,9 +21,7 @@ $languageStrings = array(
 	'LTFAQ'                        => 'FAQ Recente'                 , 
 	'UA'                           => 'Activitati viitoare'         , 
 	'PA'                           => 'Activitati in asteptare'     , 
-        'Home'                         => 'Tablou de bord'                       ,
-
-  'LBL_SAVE_ORDER' => 'Menține Ordinea',
-  'LBL_ADD_NEW_DASHBOARD' => 'Pentru a adăuga un nou tablou de bord',
-	'LBL_MAX_CHARACTERS_ALLOWED_DASHBOARD' => 'Maximum 30 de caractere sunt permise pentru nume tabloul de bord.',
+        'Home'                         => 'Index'                       ,
+        'Key Metrics'                  => 'Metrics cheie',
+	'Tag Cloud'                    => 'Tag Cloud',
 );

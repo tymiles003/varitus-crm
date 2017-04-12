@@ -21,7 +21,7 @@ class Portal_Module_Model extends Vtiger_Module_Model {
 		return $links;
 	}
     
-    public function saveRecord($recordId, $bookmarkName, $bookmarkUrl) {
+        public function savePortalRecord($recordId, $bookmarkName, $bookmarkUrl) {
         $db = PearDatabase::getInstance();
         if(empty($recordId)) {
             $portalId = $db->getUniqueID('vtiger_portal');
@@ -100,12 +100,5 @@ class Portal_Module_Model extends Vtiger_Module_Model {
             }
         }
         $db->pquery($query, $params);
-    }
-    
-    /*
-     * Function to get supported utility actions for a module
-     */
-    function getUtilityActionsNames() {
-        return array();
     }
 }

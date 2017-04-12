@@ -722,5 +722,4 @@ $jsLanguageStrings = array(
 	'JS_PBX_OUTGOING_FAILURE'=>'Llamada fallida',
 	'JS_PBX_FILL_ALL_FIELDS'=>'Por favor rellene todos los campos',
 	// ends
-	'JS_BASE_CURRENCY_CHANGED_TO_DISABLE_CURRENCY' => 'Moneda base tiene que ser cambiado para desactivar',
-);
+    );

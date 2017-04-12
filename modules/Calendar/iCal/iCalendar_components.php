@@ -247,28 +247,13 @@ class iCalendar_component {
 					}
 				}
 			} else {
-                $dateTimeMap = array('DTSTART','DTEND','DTSTART;VALUE=DATE','DTEND;VALUE=DATE');
-                if($key == 'DTSTAMP' && in_array('DTSTART;VALUE=DATE', array_keys($ical_activity))) {
-                    continue;
-                }
-                if(in_array($key, $dateTimeMap)) {
-                    if(in_array($key, array_keys($ical_activity))) {
-                        $temp = $ical_activity[$key];
-                    } else {
-						continue;
-					}
-                } else {
-					$temp = $ical_activity[$key];
-				}
+				$temp = $ical_activity[$key];
 				$count = 0;
 				if($type == 'string'){
 					$values = explode('\\,',$temp);
 				} else if($type == 'datetime' && !empty($temp)){
 					$values = $this->strtodatetime($temp);
-				} else if($type == 'date' && !empty($temp)) {
-                    $temp = $temp.'T000000Z';
-                    $values = $this->strtodatetime($temp);
-                }
+				}
 				foreach($component as $index){
 					if(!isset($activity[$index])){
 						if(isset($this->field_mapping_arr[$index])){
@@ -384,8 +369,6 @@ class iCalendar_event extends iCalendar_component {
     	'PRIORITY'		=>	array('component'=>'priority','type'=>'string'),
     	'ATTENDEE'		=>	array('component'=>'activityid','function'=>'iCalendar_event_attendee','type'=>'user'),
     	'RESOURCES'		=>	array('component'=>array('location','eventstatus'),'type'=>'string'),
-        'DTSTART;VALUE=DATE' => array('component'=>array('date_start','time_start'),'type'=>'date'),
-        'DTEND;VALUE=DATE' => array('component'=>array('due_date','time_end'),'type'=>'date')
     );
     var $field_mapping_arr = array(
     	'priority'=>'taskpriority'

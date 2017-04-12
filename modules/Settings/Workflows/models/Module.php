@@ -15,8 +15,7 @@ class Settings_Workflows_Module_Model extends Settings_Vtiger_Module_Model {
 
 	var $baseTable = 'com_vtiger_workflows';
 	var $baseIndex = 'workflow_id';
-//	var $listFields = array('summary' => 'Summary', 'module_name' => 'Module', 'execution_condition' => 'Execution Condition');
-	var $listFields = array('module_name' => 'Module', 'workflowname' => 'Workflow Name', 'summary'=>'Description', 'execution_condition' => 'Trigger',  'test' => 'Conditions');
+	var $listFields = array('summary' => 'Summary', 'module_name' => 'Module', 'execution_condition' => 'Execution Condition');
 	var $name = 'Workflows';
 
 	static $metaVariables = array(
@@ -38,7 +37,7 @@ class Settings_Workflows_Module_Model extends Settings_Vtiger_Module_Model {
 		2 => 'ONCE',
 		3 => 'ON_EVERY_SAVE',
 		4 => 'ON_MODIFY',
-		// Reserving 5 & 6 for ON_DELETE and ON_SCHEDULED types.
+        // Reserving 5 & 6 for ON_DELETE and ON_SCHEDULED types.
 		6=>	 'ON_SCHEDULE'
 	);
 
@@ -103,46 +102,19 @@ class Settings_Workflows_Module_Model extends Settings_Vtiger_Module_Model {
 		}
 		return $this->listFieldModels;
 	}
+        
+        /**
+     * Function to get the count of active workflows
+     * @return <Integer> count of active workflows
+     */
+    public function getActiveWorkflowCount(){
+        $db = PearDatabase::getInstance();
 
-	/**
-	 * Function to get the count of active workflows
-	 * @return <Integer> count of active workflows
-	 */
-	public function getActiveWorkflowCount($moduleCount = false){
-		$db = PearDatabase::getInstance();
+		$query = 'SELECT count(*) AS count FROM com_vtiger_workflows 
+                  INNER JOIN vtiger_tab ON vtiger_tab.name = com_vtiger_workflows.module_name 
+                  AND vtiger_tab.presence IN (0,2)';
 
-		$query = 'SELECT count(*) AS count, vtiger_tab.tabid FROM com_vtiger_workflows 
-				  INNER JOIN vtiger_tab ON vtiger_tab.name = com_vtiger_workflows.module_name 
-				  AND vtiger_tab.presence IN (0,2) WHERE com_vtiger_workflows.status = ? ';
-
-		if($moduleCount){
-		   $query .=' GROUP BY com_vtiger_workflows.module_name';
-		}
-
-		$result = $db->pquery($query, array(1));
-		$count = 0;
-		$wfModulesCount = array();
-		$noOfRows = $db->num_rows($result);
-		for($i=0; $i<$noOfRows; ++$i) {
-			$row = $db->query_result_rowdata($result, $i);
-			$count = $count+$row['count'];
-			$wfModulesCount[$row['tabid']] = $row['count'];
-		}
-
-		if($moduleCount){
-		   $wfModulesCount['All'] = $count;
-		   return $wfModulesCount;
-		} else {
-		   return $count;
-		}
-
-	}
-
-	public function getFields() {
-	   return array();
-	}
-
-	public function getModuleBasicLinks(){
-	   return array();
-	}
+		$result = $db->pquery($query, array());
+		return $db->query_result($result, 0, 'count');
+    }      
 }

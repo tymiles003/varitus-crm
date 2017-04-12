@@ -11,10 +11,7 @@
 class Users_DeleteUser_View extends Vtiger_Index_View {
 	
 	public function checkPermission(Vtiger_Request $request){
-		$currentUserModel = Users_Record_Model::getCurrentUserModel();
-		if(!$currentUserModel->isAdminUser()) {
-			throw new AppException(vtranslate('LBL_PERMISSION_DENIED', 'Vtiger'));
-		}
+		parent::checkPermission($request);
 	}
 
 	public function process(Vtiger_Request $request) {

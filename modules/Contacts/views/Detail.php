@@ -19,11 +19,8 @@ class Contacts_Detail_View extends Accounts_Detail_View {
 		$recordId = $request->get('record');
 		$moduleName = $request->getModule();
 
-		// Getting model to reuse it in parent 
-		if (!$this->record) {
-			$this->record = Vtiger_DetailView_Model::getInstance($moduleName, $recordId);
-		}
-		$recordModel = $this->record->getRecord();
+		$recordModel = Vtiger_Record_Model::getInstanceById($recordId, $moduleName);
+
 		$viewer = $this->getViewer($request);
 		$viewer->assign('IMAGE_DETAILS', $recordModel->getImageDetails());
 

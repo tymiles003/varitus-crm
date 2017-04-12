@@ -8,8 +8,6 @@
  * All Rights Reserved.
  ************************************************************************************/
 include_once dirname(__FILE__) . '/SMSNotifierBase.php';
-include_once dirname(__FILE__) . '/ext/SMSProvider.php';
-include_once dirname(__FILE__) . '/ext/ISMSProvider.php';
 include_once 'include/Zend/Json.php';
 
 class SMSNotifier extends SMSNotifierBase {
@@ -66,16 +64,7 @@ class SMSNotifier extends SMSNotifierBase {
 			}
 		}
 		$responses = self::fireSendSMS($message, $tonumbers);
-
-		$status = ISMSProvider::MSG_STATUS_DISPATCHED;
-		foreach ($responses as $response) {
-			if ($response['error']) {
-				$status = ISMSProvider::MSG_STATUS_FAILED;
-			}
-		}
-
 		$focus->processFireSendSMSResponse($responses);
-		return $focus->id;
 	}
 
 	/**
@@ -142,9 +131,6 @@ class SMSNotifier extends SMSNotifierBase {
 			$getGroupObj=new GetGroupUsers();
 			$getGroupObj->getAllUsersInGroup($assignedtoid);
       		$userIds = $getGroupObj->group_users;
-
-			//Clearing static cache for sub groups
-			GetGroupUsers::$groupIdsList = array();
 		}
 
 		$tonumbers = array();
@@ -197,40 +183,35 @@ class SMSNotifier extends SMSNotifierBase {
 
 	static function smsquery($record) {
 		global $adb;
-		$results = array();
-		$result = $adb->pquery("SELECT * FROM vtiger_smsnotifier_status WHERE smsnotifierid = ?", array($record));
-		if ($result && $adb->num_rows($result)) {
+		$result = $adb->pquery("SELECT * FROM vtiger_smsnotifier_status WHERE smsnotifierid = ? AND needlookup = 1", array($record));
+		if($result && $adb->num_rows($result)) {
 			$provider = SMSNotifierManager::getActiveProviderInstance();
 
-			while ($resultrow = $adb->fetch_array($result)) {
-				if ($resultrow['needlookup'] == 1) {
-					$messageid = $resultrow['smsmessageid'];
+			while($resultrow = $adb->fetch_array($result)) {
+				$messageid = $resultrow['smsmessageid'];
 
-					$response = $provider->query($messageid);
+				$response = $provider->query($messageid);
 
-					if ($response['error']) {
-						$responseStatus = ISMSProvider::MSG_STATUS_FAILED;
-						$needlookup = $response['needlookup'];
-					} else {
-						$responseStatus = $response['status'];
-						$needlookup = $response['needlookup'];
-					}
-
-					$responseStatusMessage = '';
-					if (isset($response['statusmessage'])) {
-						$responseStatusMessage = $response['statusmessage'];
-					}
-
-					$adb->pquery("UPDATE vtiger_smsnotifier_status SET status=?, statusmessage=?, needlookup=? WHERE smsmessageid = ?", array($responseStatus, $responseStatusMessage, $needlookup, $messageid));
-					$resultrow['status'] = $responseStatus;
-					$resultrow['statusmessage'] = $responseStatusMessage;
-					$resultrow['needlookup'] = $needlookup;
+				if($response['error']) {
+					$responseStatus = ISMSProvider::MSG_STATUS_FAILED;
+					$needlookup = $response['needlookup'];
+				} else {
+					$responseStatus = $response['status'];
+					$needlookup = $response['needlookup'];
 				}
-				$results[] = $resultrow;
+
+				$responseStatusMessage = '';
+				if(isset($response['statusmessage'])) {
+					$responseStatusMessage = $response['statusmessage'];
+				}
+
+				$adb->pquery("UPDATE vtiger_smsnotifier_status SET status=?, statusmessage=?, needlookup=? WHERE smsmessageid = ?",
+					array($responseStatus, $responseStatusMessage, $needlookup, $messageid));
 			}
 		}
-		return $results;
 	}
+
+
 
 	static function fireSendSMS($message, $tonumbers) {
 		global $log;
@@ -257,7 +238,7 @@ class SMSNotifierManager {
 
 	/** Server configuration management */
 	static function listAvailableProviders() {
-		return SMSProvider::listAll();
+		return SMSNotifier_Provider_Model::listAll();
 	}
 
 	static function getActiveProviderInstance() {
@@ -265,7 +246,7 @@ class SMSNotifierManager {
 		$result = $adb->pquery("SELECT * FROM vtiger_smsnotifier_servers WHERE isactive = 1 LIMIT 1", array());
 		if($result && $adb->num_rows($result)) {
 			$resultrow = $adb->fetch_array($result);
-			$provider = SMSProvider::getInstance($resultrow['providertype']);
+			$provider = SMSNotifier_Provider_Model::getInstance($resultrow['providertype']);
 			$parameters = array();
 			if(!empty($resultrow['parameters'])) $parameters = Zend_Json::decode(decode_html($resultrow['parameters']));
 			foreach($parameters as $k=>$v) {
@@ -304,7 +285,7 @@ class SMSNotifierManager {
 		$password     = vtlib_purify($frmvalues['smsserver_password']);
 		$isactive     = vtlib_purify($frmvalues['smsserver_isactive']);
 
-		$provider = SMSProvider::getInstance($providertype);
+		$provider = SMSNotifier_Provider_Model::getInstance($providertype);
 
 		$parameters = '';
 		if($provider) {

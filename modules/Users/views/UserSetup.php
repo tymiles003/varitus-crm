@@ -33,7 +33,6 @@ class Users_UserSetup_View extends Vtiger_Index_View {
 				$viewer->assign('IS_FIRST_USER', $isFirstUser);
 				$viewer->assign('CURRENCIES', $currenciesList);
 			}
-
 			$viewer->assign('CURRENT_USER_MODEL',$userModel);
 			$viewer->assign('MODULE', $moduleName);
 			$viewer->assign('USER_NAME', $userName);
@@ -41,15 +40,15 @@ class Users_UserSetup_View extends Vtiger_Index_View {
 			$viewer->assign('LANGUAGES', $userModuleModel->getLanguagesList());
 			$viewer->assign('USER_ID', $request->get('record'));
 			$viewer->view('UserSetup.tpl', $moduleName);
-		} else {
+		}else {
 			if(isset($_SESSION['return_params'])) {
-				$return_params = urldecode($_SESSION['return_params']);
-				header("Location: index.php?$return_params");
-				exit();
-			} else {
-				header("Location: index.php");
-				exit();
-			}
+                $return_params = urldecode($_SESSION['return_params']);
+                header("Location: index.php?$return_params");
+                exit();
+            } else {
+                header("Location: index.php");
+                exit();
+            }
 		}
 	}
 

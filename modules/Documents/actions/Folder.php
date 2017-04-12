@@ -38,14 +38,7 @@ class Documents_Folder_Action extends Vtiger_Action_Controller {
 		$result = array();
 
 		if (!empty ($folderName)) {
-            $saveMode = $request->get('savemode');
-            $folderModel = Documents_Folder_Model::getInstance();
-            if($saveMode == 'edit') {
-                $folderId = $request->get('folderid');
-                $folderModel = Documents_Folder_Model::getInstanceById($folderId);
-                $folderModel->set('mode','edit');                
-            }
-			
+			$folderModel = Documents_Folder_Model::getInstance();
 			$folderModel->set('foldername', $folderName);
 			$folderModel->set('description', $folderDesc);
 
@@ -83,8 +76,8 @@ class Documents_Folder_Action extends Vtiger_Action_Controller {
 		$response->setResult($result);
 		$response->emit();
 	}
-    
-    public function validateRequest(Vtiger_Request $request) {
-        $request->validateWriteAccess();
-    }
+        
+        public function validateRequest(Vtiger_Request $request) { 
+            $request->validateWriteAccess(); 
+        } 
 }

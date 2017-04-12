@@ -23,6 +23,10 @@ class Mobile {
 		return false;
 	}
 	
+	static function templatePath($filename) {
+		return vtlib_getModuleTemplate('Mobile',"generic/$filename");
+	}
+	
 	static function config($key, $defvalue = false) {
 		// Defined in the configuration file
 		global $Module_Mobile_Configuration;

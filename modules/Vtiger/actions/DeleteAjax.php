@@ -18,7 +18,6 @@ class Vtiger_DeleteAjax_Action extends Vtiger_Delete_Action {
 		$recordModel->delete();
 
 		$cvId = $request->get('viewname');
-		deleteRecordFromDetailViewNavigationRecords($recordId, $cvId, $moduleName);
 		$response = new Vtiger_Response();
 		$response->setResult(array('viewname'=>$cvId, 'module'=>$moduleName));
 		$response->emit();

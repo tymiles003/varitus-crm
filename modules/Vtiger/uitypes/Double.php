@@ -24,20 +24,7 @@ class Vtiger_Double_UIType extends Vtiger_Base_UIType {
 	 * @return <Object>
 	 */
 	public function getDisplayValue($value) {
-		$value = decimalFormat($value);
-		if ($value) {
-			$value = CurrencyField::convertToUserFormat($value, NULL, true);
-		}
-		return $value;
-	}
-
-	/**
-	 * Function to get the Value of the field in the format, the user provides it on Save
-	 * @param <Object> $value
-	 * @return <Object>
-	 */
-	public function getUserRequestValue($value) {
-		return $this->getDisplayValue($value);
+		return decimalFormat($value);
 	}
 
 }

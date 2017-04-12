@@ -9,15 +9,13 @@
  ************************************************************************************/
 
 class Users_Logout_Action extends Vtiger_Action_Controller {
-	
+
 	function checkPermission(Vtiger_Request $request) {
 		return true;
 	}
 
 	function process(Vtiger_Request $request) {
-		//Redirect into the referer page
-		$logoutURL = $this->getLogoutURL();
-        session_regenerate_id(true);
+		session_regenerate_id(true); // to overcome session id reuse.
 		Vtiger_Session::destroy();
 		
 		//Track the logout History
@@ -25,20 +23,7 @@ class Users_Logout_Action extends Vtiger_Action_Controller {
 		$moduleModel = Users_Module_Model::getInstance($moduleName);
 		$moduleModel->saveLogoutHistory();
 		//End
-
-		if(!empty($logoutURL)) {
-			header('Location: '.$logoutURL);
-			exit();
-		} else {
-			header ('Location: index.php');
-		}
-	}
-	
-	protected function getLogoutURL() {
-		$logoutUrl = Vtiger_Session::get('LOGOUT_URL');
-		if (isset($logoutUrl) && !empty($logoutUrl)) {
-			return $logoutUrl;
-		}
-		return VtigerConfig::getOD('LOGIN_URL');
+		
+		header ('Location: index.php');
 	}
 }

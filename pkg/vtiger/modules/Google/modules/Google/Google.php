@@ -14,7 +14,6 @@ require_once('include/events/include.inc');
 class Google {
 
     const module = 'Google';
-	var $LBL_GOOGLE = 'LBL_GOOGLE';
 
     /**
      * Invoked when special actions are to be performed on the module.
@@ -33,11 +32,9 @@ class Google {
         } else if ($eventType == 'module.disabled') {
             $this->removeMapWidget($forModules);
             $this->removeWidgetforSync($syncModules);
-			$adb->pquery('UPDATE vtiger_settings_field SET active=1 WHERE name=?',array($this->LBL_GOOGLE));
         } else if ($eventType == 'module.enabled') {
             $this->addMapWidget($forModules);
             $this->addWidgetforSync($syncModules);
-			$adb->pquery('UPDATE vtiger_settings_field SET active=0 WHERE name=?',array($this->LBL_GOOGLE));
         } else if ($eventType == 'module.preuninstall') {
             $this->removeMapWidget($forModules);
             $this->removeWidgetforSync($syncModules);

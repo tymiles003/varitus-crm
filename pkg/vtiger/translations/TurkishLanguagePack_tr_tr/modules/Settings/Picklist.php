@@ -37,13 +37,9 @@ $languageStrings = array(
 	'LBL_ASSIGN_VALUES_TO_ROLES'   => 'Assign Values to Roles'      , // TODO: Review
 	'LBL_SELECTED_VALUES'          => 'Selected Values'             , // TODO: Review
 	'NO_PICKLIST_FIELDS'           => 'do not have any picklist fields', // TODO: Review
-    'LBL_EDIT_PICKLIST_ITEM'       => 'Düzenleme Seçim listesi Öğe',
 	
 	//Translation for module
-	'Calendar'						=> 'Görev'						,
-
-  'LBL_NON_EDITABLE_PICKLIST_VALUES' => 'Sigara Düzenlenebilir Değerleri',
-
+	'Calendar'						=> 'Yapılacak'						,
 );
 $jsLanguageStrings = array(
 	'JS_ITEM_RENAMED_SUCCESSFULLY' => 'Item Renamed Successfully'   , // TODO: Review
@@ -57,8 +53,4 @@ $jsLanguageStrings = array(
 	'JS_SEQUENCE_UPDATED_SUCCESSFULLY' => 'Sequence updated successfully', // TODO: Review
 	'JS_VALUE_ASSIGNED_SUCCESSFULLY' => 'Value assigned successfully' , // TODO: Review
 	'JS_PLEASE_SELECT_MODULE'      => 'Please seelct module'        , // TODO: Review
-
-  'JS_SPECIAL_CHARACTERS' => 'Gibi özel Karakterler ',
-  'JS_NOT_ALLOWED' => 'izin verilmez ',
-
 );

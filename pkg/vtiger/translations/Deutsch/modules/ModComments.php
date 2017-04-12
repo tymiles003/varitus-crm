@@ -17,5 +17,4 @@ $languageStrings = array(
 	'Comment'                      => 'Kommentar'                   , 
 	'Creator'                      => 'erzeugt von'                 , 
 	'Related To Comments'          => 'bezogen auf'                 , 
-	'LBL_COMMENTED_AT'             => 'Kommentiert am'              , 
 );

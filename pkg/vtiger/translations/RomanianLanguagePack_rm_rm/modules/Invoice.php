@@ -8,8 +8,7 @@
  * All Rights Reserved.
  ************************************************************************************/
 $languageStrings = array(
-    'Invoice'               => 'Facturi'                     , 
-	'SINGLE_Invoice'               => 'Facturi'                     , 
+	'SINGLE_Invoice'               => 'Factura'                     , 
 	'LBL_EXPORT_TO_PDF'            => 'Exporta in PDF'              , 
 	'LBL_SEND_MAIL_PDF'            => 'Send Email with PDF'         , // TODO: Review
 	'LBL_ADD_RECORD'               => 'Add Invoice'                 , 
@@ -31,9 +30,4 @@ $languageStrings = array(
 	'LBL_NOT_A_BUNDLE' => 'Nu este o Bundle',
 	'LBL_SUB_PRODUCTS'	=> 'Sub Produse',
 	'LBL_ACTION'	=> 'Ac?iune',
-
-  'LBL_THIS' => 'Acest lucru',
-  'LBL_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_OR_REPLACE_THIS_ITEM' => 'va fi eliminat din sistem.vă rugăm să eliminați sau înlocuiți elementul',
-  'LBL_THIS_LINE_ITEM_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_THIS_LINE_ITEM' => 'Această poziție este eliminat din sistem,vă rugăm să ștergeți acest șir de elemente',
-
 );

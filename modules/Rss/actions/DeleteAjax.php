@@ -10,16 +10,6 @@
 
 class Rss_DeleteAjax_Action extends Vtiger_Delete_Action {
 
-	public function checkPermission(Vtiger_Request $request) {
-		$moduleName = $request->getModule();
-		$record = $request->get('record');
-
-		$currentUserPrivilegesModel = Users_Privileges_Model::getCurrentUserPrivilegesModel();
-		if(!$currentUserPrivilegesModel->isPermitted($moduleName, 'Delete', $record)) {
-			throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
-		}
-	}
-
 	public function process(Vtiger_Request $request) {
 		$moduleName = $request->getModule();
 		$recordId = $request->get('record');
@@ -28,7 +18,7 @@ class Rss_DeleteAjax_Action extends Vtiger_Delete_Action {
 		$recordModel->delete();
 
 		$response = new Vtiger_Response();
-		$response->setResult(array('record' => $recordId, 'module' => $moduleName, 'deleted' => true));
+		$response->setResult(array('record'=>$recordId, 'module'=>$moduleName));
 		$response->emit();
 	}
 }

@@ -25,7 +25,7 @@ $languageStrings = array(
 	'Worked Hours'	=>	"Çalışılan Saat",
 	'Start Date'	=>	"Başlangıç ​​Tarihi",
 	'End Date'	=>	"Bitiş Tarihi",
-	'Related to'	=>	"İlgili",
+	'Related To'	=>	"İlgili",
 	'administrative' => 'Idari',
     'operative' => 'Faal',
     'other' => 'Diğer',
@@ -41,8 +41,4 @@ $languageStrings = array(
 	'Completed'	=>	"Tamamlandı",
 	'Deferred'	=>	"Ertelenen",
 	'Canceled'	=>	"Iptal edildi",
-        'LBL_NO_DATE_VALUE_MSG' => 'veya Proje Görevleri Başlat ve / veya Bitiş Tarihi yok',
-
-  'Canceled ' => 'İptal',
-
 );

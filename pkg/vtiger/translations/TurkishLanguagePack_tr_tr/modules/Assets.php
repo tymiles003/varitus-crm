@@ -25,7 +25,4 @@ $languageStrings = array(
 	'Notes'                        => 'Notlar'                      , 
 	'In Service'                   => 'In Service'                  , 
 	'Out-of-service'               => 'Out-of-service'              , 
-
-  'Assets' => 'Varlıkların',
-
 );

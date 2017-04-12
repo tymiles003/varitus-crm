@@ -15,24 +15,21 @@ class Vtiger_Theme extends Vtiger_Viewer {
 	 * @param <String> $fileName
 	 * @return <string / Boolean> - file path , false if not exists
 	 */
-	public static function getStylePath($fileName='', $theme=''){
+	public static function getStylePath($fileName=''){
 		// Default CSS for better performance, LESS format for development.
 		if(empty($fileName)) {
 			$fileName = 'style.css';
 		}
-		$filePath =  self::getThemePath($theme) . '/' . $fileName;
-		$lessFilePath = self::getThemePath($theme) . '/style.less' ;
+		$filePath =  self::getThemePath() . '/' . $fileName;
 		$fallbackPath = self::getBaseThemePath() . '/' . self::getDefaultThemeName() .'/' .'style.less' ;
 
 		$completeFilePath = Vtiger_Loader::resolveNameToPath('~'.$filePath);
-		$completeLessFilePath = Vtiger_Loader::resolveNameToPath('~'.$lessFilePath);
 		$completeFallBackPath = Vtiger_Loader::resolveNameToPath('~'.$fallbackPath);
 
 		if(file_exists($completeFilePath)){
 			return $filePath;
-		} else if(file_exists($completeLessFilePath)) {
-			return $lessFilePath;
-		} else if(file_exists($completeFallBackPath)){
+		}
+		else if(file_exists($completeFallBackPath)){
 			return $fallbackPath;
 		}
 		// Exception should be thrown???
@@ -73,7 +70,6 @@ class Vtiger_Theme extends Vtiger_Viewer {
 	 * @return <string> -  selected theme path
 	 */
 	public static function getThemePath($theme=''){
-		// Commented to get the default skins path for a layout
 		if(empty($theme)) {
 			$theme = self::getDefaultThemeName();
 		}
@@ -103,28 +99,21 @@ class Vtiger_Theme extends Vtiger_Viewer {
 		return empty($theme)? self::DEFAULTTHEME : $theme;
 	}
 
-	/**
-	 * Function to returns all skins(themes)
-	 * @return <Array>
-	 */
-	public static function getAllSkins(){
-		return Vtiger_Util_Helper::getAllSkins();
-	}
+    /**
+     * Function to returns all skins(themes)
+     * @return <Array>
+     */
+    public static function getAllSkins(){
+        return Vtiger_Util_Helper::getAllSkins();
+    }
 
 	/**
 	 * Function returns the current users skin(theme) path
-	 */
+ 	 */
 	public static function getCurrentUserThemePath() {
 		$themeName = self::getDefaultThemeName();
 		$baseLayoutPath = self::getBaseThemePath();
 		return $baseLayoutPath. '/' .$themeName;
-	}
-
-	public static function getv7AppStylePath($appTheme = false) {
-		if (empty($appTheme)) {
-			$appTheme = 'MARKETING';
-		}
-		return Vtiger_Theme::getStylePath('', strtolower($appTheme));
 	}
 }
 

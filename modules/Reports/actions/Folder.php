@@ -22,7 +22,7 @@ class Reports_Folder_Action extends Vtiger_Action_Controller {
 
 		$currentUserPriviligesModel = Users_Privileges_Model::getCurrentUserPrivilegesModel();
 		if(!$currentUserPriviligesModel->hasModulePermission($moduleModel->getId())) {
-			throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
+			throw new AppException('LBL_PERMISSION_DENIED');
 		}
 	}
 
@@ -47,12 +47,11 @@ class Reports_Folder_Action extends Vtiger_Action_Controller {
 			$folderModel->set('folderid', $folderId);
 		}
 
-        // we need to decode if encoded values are given(for XSS vulnerability)
-		$folderModel->set('foldername', decode_html($request->get('foldername')));
-		$folderModel->set('description', decode_html($request->get('description')));
+		$folderModel->set('foldername', $request->get('foldername'));
+		$folderModel->set('description', $request->get('description'));
 
 		if ($folderModel->checkDuplicate()) {
-			throw new AppException(vtranslate('LBL_FOLDER_EXISTS', $moduleName));
+			throw new AppException(vtranslate('LBL_DUPLICATES_EXIST', $moduleName));
 		}
 
 		$folderModel->save();
@@ -70,29 +69,28 @@ class Reports_Folder_Action extends Vtiger_Action_Controller {
 	function delete(Vtiger_Request $request) {
 		$folderId = $request->get('folderid');
 		$moduleName = $request->getModule();
+
 		if ($folderId) {
 			$folderModel = Reports_Folder_Model::getInstanceById($folderId);
-			$success = false;
+
 			if ($folderModel->isDefault()) {
-				$message = vtranslate('LBL_FOLDER_CAN_NOT_BE_DELETED', $moduleName);
+				throw new AppException(vtranslate('LBL_FOLDER_CAN_NOT_BE_DELETED', $moduleName));
 			} else {
 				if ($folderModel->hasReports()) {
-					$message = vtranslate('LBL_FOLDER_NOT_EMPTY', $moduleName);
-				} else {
-					$folderModel->delete();
-					$message = vtranslate('LBL_FOLDER_DELETED', $moduleName);
-					$success = true;
+					throw new AppException(vtranslate('LBL_FOLDER_NOT_EMPTY', $moduleName));
 				}
 			}
-			
-			$result = array('success' => $success, 'message' => $message);
+
+			$folderModel->delete();
+			$result = array('success'=>true, 'message'=>vtranslate('LBL_FOLDER_DELETED', $moduleName));
+
 			$response = new Vtiger_Response();
 			$response->setResult($result);
 			$response->emit();
 		}
 	}
-    
-    public function validateRequest(Vtiger_Request $request) {
-        return true;
-    }
+        
+        public function validateRequest(Vtiger_Request $request) { 
+            $request->validateWriteAccess(); 
+        }
 }

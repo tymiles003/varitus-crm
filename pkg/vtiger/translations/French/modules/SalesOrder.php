@@ -8,7 +8,6 @@
  * All Rights Reserved.
  ************************************************************************************/
 $languageStrings = array(
-    'SalesOrder'                   => 'Bon de commande'             , 
 	'SINGLE_SalesOrder'            => 'Bon de commande'             , 
 	'LBL_EXPORT_TO_PDF'            => 'Export PDF'                  , 
 	'LBL_SEND_MAIL_PDF'            => 'Send Email with PDF'         , // TODO: Review
@@ -23,7 +22,8 @@ $languageStrings = array(
 	'Sales Commission'             => 'Commission'                  , 
 	'Purchase Order'               => 'Commande fournisseur'        , 
 	'Vendor Terms'                 => 'Conditions fournisseur'      , 
-	'Pending'                      => 'En attente'                  , 
+	'Pending'                      => 'En attente'                  ,
+    'Recurring Invoive Information'=>'Information sur la facturation récurrente',
 	'Enable Recurring'             => 'Activer la récurrence'      , 
 	'Frequency'                    => 'Fréquence'                  , 
 	'Start Period'                 => 'Début'                      , 
@@ -34,7 +34,14 @@ $languageStrings = array(
 	'AutoCreated'                  => 'Crée automatiquement'       , 
 	'Sent'                         => 'Envoyé'                     , 
 	'Credit Invoice'               => 'Facture au Crédit'          , 
-	'Paid'                         => 'Soldé'                      , 
+	'Paid'                         => 'Soldé'                      ,
+    'Daily'=>'Quotidien',
+    'Monthly'=>'Mensuel',
+    'Quarterly'=>'Trimestriel',
+    'Yearly'=>'Annuel',
+    'Net 30 days'=>'Net 30 jours',
+    'Net 45 days'=>'Net 45 jours',
+    'Net 60 days'=>'Net 60 jours', 
 	
 	//Translations used for Export to Pdf
 	'Valid Date' => 'Date de validité',
@@ -51,9 +58,4 @@ $languageStrings = array(
 	'Tax' => 'Taxe',
 	'Contact Name' => 'Nom contact',
 	'Grand Total:' => 'Total:',
-
-  'LBL_THIS' => 'Cette',
-  'LBL_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_OR_REPLACE_THIS_ITEM' => 'est supprimé du système.merci de supprimer ou de remplacer cet élément',
-  'LBL_THIS_LINE_ITEM_IS_DELETED_FROM_THE_SYSTEM_PLEASE_REMOVE_THIS_LINE_ITEM' => 'Cet élément est supprimé du système,veuillez supprimer cette ligne d\'articles',
-
 );

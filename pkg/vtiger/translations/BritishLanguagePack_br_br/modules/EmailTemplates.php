@@ -8,7 +8,6 @@
  * All Rights Reserved.
  *************************************************************************************/
 $languageStrings = array(
-	'Email Templates' => 'Email Templates',
 	'LBL_ADD_RECORD' => 'Add Email Template',
 	'SINGLE_EmailTemplates' => 'Email Template',
 	'LBL_EMAIL_TEMPLATES'=> 'Email Templates',
@@ -18,15 +17,8 @@ $languageStrings = array(
 	'LBL_DESCRIPTION' => 'Description',
 	'LBL_SUBJECT' => 'Subject',
 	'LBL_GENERAL_FIELDS' => 'General Fields',
-	'LBL_SELECT_FIELD_TYPE' => 'Select Module & Field',
-	'LBL_MODULE_NAME'=>'Module Name',
-	'LBL_EMAIL_TEMPLATE_DESCRIPTION'=>'Manage templates for E-Mail module',
-	'LBL_NO_PERMISSIONS_TO_DELETE_SYSTEM_TEMPLATE' => 'No Permissions to delete System Template',
-	'LBL_RECORD_ID' => 'Record ID',
+	'LBL_SELECT_FIELD_TYPE' => 'Select Field Type',
 	
-);
-
-$jsLanguageStrings = array(
-    'LBL_CUTOMER_LOGIN_DETAILS_TEMPLATE_DELETE_MESSAGE' => 'You will not be able to send the customer portal login details to the contact if you delete "Customer Login Details" template. Do you wish to continue ?',
-	'JS_REQUIRED_FIELD' => '* System Email Template Content is Required',
+	'LBL_EMAIL_TEMPLATE_DESCRIPTION'=>'Manage templates for E-Mail module',
+	
 );

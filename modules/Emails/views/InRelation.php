@@ -29,27 +29,15 @@ class Emails_InRelation_View extends Vtiger_RelatedList_View {
 		if($sortOrder == "ASC") {
 			$nextSortOrder = "DESC";
 			$sortImage = "icon-chevron-down";
-            $faSortImage = "fa-sort-desc";
 		} else {
 			$nextSortOrder = "ASC";
 			$sortImage = "icon-chevron-up";
-            $faSortImage = "fa-sort-asc";
 		}
 		if(!empty($orderBy)) {
 			$relationListView->set('orderby', $orderBy);
 			$relationListView->set('sortorder',$sortOrder);
-		} else {
-			$relationListView->set('orderby', 'date_start');
-			$relationListView->set('sortorder', 'DESC');
 		}
 		$models = $relationListView->getEntries($pagingModel);
-		$modelIds = array();
-		foreach ($models as $model) {
-			$modelIds[] = $model->getId();
-		}
-		if(!empty($modelIds)){
-			$trackingInfo = Emails_Record_Model::getTrackingInfo($modelIds, $parentId);
-		}
 		$links = $relationListView->getLinks();
 		$header = $relationListView->getHeaders();
 		$noOfEntries = count($models);
@@ -66,7 +54,6 @@ class Emails_InRelation_View extends Vtiger_RelatedList_View {
 		$viewer->assign('RELATED_MODULE', $relatedModuleModel);
 		$viewer->assign('RELATED_ENTIRES_COUNT', $noOfEntries);
 		$viewer->assign('RELATION_FIELD', $relationField);
-		$viewer->assign('TRACKING_INFO' , $trackingInfo);
 
 		if (PerformancePrefs::getBoolean('LISTVIEW_COMPUTE_PAGE_COUNT', false)) {
 			$totalCount = $relationListView->getRelatedEntriesCount();
@@ -85,7 +72,6 @@ class Emails_InRelation_View extends Vtiger_RelatedList_View {
 		$viewer->assign('PAGING', $pagingModel);
 
 		$viewer->assign('ORDER_BY',$orderBy);
-        $viewer->assign('FASORT_IMAGE',$faSortImage);
 		$viewer->assign('SORT_ORDER',$sortOrder);
 		$viewer->assign('NEXT_SORT_ORDER',$nextSortOrder);
 		$viewer->assign('SORT_IMAGE',$sortImage);

@@ -26,11 +26,7 @@ class Inventory_Module_Model extends Vtiger_Module_Model {
 	 * @return <Boolean> - true/false
 	 */
 	public function isSummaryViewSupported() {
-		return true;
-	}
-
-	public function isCommentEnabled() {
-		return true;
+		return false;
 	}
 
 	static function getAllCurrencies() {
@@ -38,21 +34,11 @@ class Inventory_Module_Model extends Vtiger_Module_Model {
 	}
 
 	static function getAllProductTaxes() {
-		$taxes = array();
-		$availbleTaxes = getAllTaxes('available');
-		foreach ($availbleTaxes as $taxInfo) {
-			if ($taxInfo['method'] === 'Deducted') {
-				continue;
-			}
-			$taxInfo['compoundon'] = Zend_Json::decode(html_entity_decode($taxInfo['compoundon']));
-			$taxInfo['regions'] = Zend_Json::decode(html_entity_decode($taxInfo['regions']));
-			$taxes[$taxInfo['taxid']] = $taxInfo;
-		}
-		return $taxes;
+		return getAllTaxes('available');
 	}
 
 	static function getAllShippingTaxes() {
-		return Inventory_Charges_Model::getChargeTaxesList();
+		return getAllTaxes('available', 'sh');
 	}
 
 	/**
@@ -62,7 +48,7 @@ class Inventory_Module_Model extends Vtiger_Module_Model {
 	 * @param Vtiger_Module_Model $relatedModule
 	 * @return <String>
 	 */
-	public function getRelationQuery($recordId, $functionName, $relatedModule, $relationId) {
+	public function getRelationQuery($recordId, $functionName, $relatedModule) {
 		if ($functionName === 'get_activities') {
 			$userNameSql = getSqlForNameInDisplayFormat(array('first_name' => 'vtiger_users.first_name', 'last_name' => 'vtiger_users.last_name'), 'Users');
 
@@ -76,7 +62,7 @@ class Inventory_Module_Model extends Vtiger_Module_Model {
 						LEFT JOIN vtiger_cntactivityrel ON vtiger_cntactivityrel.activityid = vtiger_activity.activityid
 						LEFT JOIN vtiger_users ON vtiger_users.id = vtiger_crmentity.smownerid
 						LEFT JOIN vtiger_groups ON vtiger_groups.groupid = vtiger_crmentity.smownerid
-							WHERE vtiger_crmentity.deleted = 0 AND vtiger_activity.activitytype <> 'Emails'
+							WHERE vtiger_crmentity.deleted = 0 AND vtiger_activity.activitytype = 'Task'
 								AND vtiger_seactivityrel.crmid = ".$recordId;
 
 			$relatedModuleName = $relatedModule->getName();
@@ -86,7 +72,7 @@ class Inventory_Module_Model extends Vtiger_Module_Model {
 				$query = appendFromClauseToQuery($query, $nonAdminQuery);
 			}
 		} else {
-			$query = parent::getRelationQuery($recordId, $functionName, $relatedModule, $relationId);
+			$query = parent::getRelationQuery($recordId, $functionName, $relatedModule);
 		}
 
 		return $query;
@@ -117,12 +103,5 @@ class Inventory_Module_Model extends Vtiger_Module_Model {
 		$query = implode(',', $columnFields).' FROM ' . $splitQuery[1];
 		
 		return $query;
-	}
-
-	/*
-	 * Function to get supported utility actions for a module
-	 */
-	function getUtilityActionsNames() {
-		return array('Import', 'Export');
 	}
 }

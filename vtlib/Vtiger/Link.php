@@ -52,7 +52,6 @@ class Vtiger_Link {
 		$this->handler_path	=isset($valuemap['handler_path']) ? $valuemap['handler_path'] : null;
 		$this->handler_class=isset($valuemap['handler_class']) ? $valuemap['handler_class'] : null;
 		$this->handler		=isset($valuemap['handler']) ? $valuemap['handler'] : null;
-		$this->parent_link	=$valuemap['parent_link'];
 	}
 
 	/**
@@ -104,7 +103,7 @@ class Vtiger_Link {
 	 * @param String ICON to use on the display
 	 * @param Integer Order or sequence of displaying the link
 	 */
-	static function addLink($tabid, $type, $label, $url, $iconpath='',$sequence=0, $handlerInfo=null, $parentLink=null) {
+	static function addLink($tabid, $type, $label, $url, $iconpath='',$sequence=0, $handlerInfo=null) {
 		global $adb;
 		self::__initSchema();
 		$checkres = $adb->pquery('SELECT linkid FROM vtiger_links WHERE tabid=? AND linktype=? AND linkurl=? AND linkicon=? AND linklabel=?',
@@ -119,10 +118,6 @@ class Vtiger_Link {
 				$params[] = $handlerInfo['path'];
 				$params[] = $handlerInfo['class'];
 				$params[] = $handlerInfo['method'];
-			}
-			if(!empty($parentLink)) {
-				$sql .= ',parent_link';
-				$params[] = $parentLink;
 			}
 			$sql .= (') VALUES ('.generateQuestionMarks($params).')');
 			$adb->pquery($sql, $params);
@@ -192,7 +187,7 @@ class Vtiger_Link {
 					$params = $type;
 					$permittedTabIdList = getPermittedModuleIdList();
 					if(count($permittedTabIdList) > 0 && $current_user->is_admin !== 'on') {
-						array_push($permittedTabIdList, 0);	// Added to support one link for all modules
+                        array_push($permittedTabIdList, 0);     // Added to support one link for all modules
 						$sql .= ' and tabid IN ('.
 							Vtiger_Utils::implodestr('?', count($permittedTabIdList), ',').')';
 						$params[] = $permittedTabIdList;
@@ -208,7 +203,7 @@ class Vtiger_Link {
 				if($tabid === self::IGNORE_MODULE) {
 					$result = $adb->pquery('SELECT * FROM vtiger_links WHERE linktype=?', Array($type));
 				} else {
-					$result = $adb->pquery('SELECT * FROM vtiger_links WHERE (tabid=? OR tabid=0) AND linktype=?', Array($tabid, $type));
+					$result = $adb->pquery('SELECT * FROM vtiger_links WHERE (tabid=? OR tabid=0) AND linktype=?', Array($tabid, $type));				
 				}
 			}
 		} else {

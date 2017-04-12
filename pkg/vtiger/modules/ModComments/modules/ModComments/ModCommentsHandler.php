@@ -24,10 +24,7 @@ class ModCommentsHandler extends VTEventHandler {
 			$db = PearDatabase::getInstance();
 
 			$relatedToId = $data->get('related_to');
-            $relatedInfo = array();
-            $relatedInfo['module'] = $data->focus->moduleName;
-            $relatedInfo['id'] = $data->focus->id;
-			if ($relatedToId && $data->getModuleName() == 'ModComments') {
+			if ($relatedToId) {
 				$moduleName = getSalesEntityType($relatedToId);
 				$focus = CRMEntity::getInstance($moduleName);
 				$focus->retrieve_entity_info($relatedToId, $moduleName);
@@ -36,32 +33,24 @@ class ModCommentsHandler extends VTEventHandler {
 				if ($fromPortal) {
 					$focus->column_fields['from_portal'] = $fromPortal;
 				}
-				if($data->isNew()) {
-					// we need to update related to modified and last modified by, whenever a comment is added
-					$focus->trackLinkedInfo($moduleName, $relatedToId, $data->getModuleName(), $data->getId());
-				}
+				$entityData = VTEntityData::fromCRMEntity($focus);
 
-				//if its Internal comment, workflow should not trigger
-				$isPrivateComment = $data->get('is_private');
-				if(!$isPrivateComment) {
-					$entityData = VTEntityData::fromCRMEntity($focus);
+				$wfs = new VTWorkflowManager($db);
+				$relatedToEventHandler = new VTWorkflowEventHandler();
+				$relatedToEventHandler->workflows = $wfs->getWorkflowsForModuleSupportingComments($entityData->getModuleName());
 
-					$wfs = new VTWorkflowManager($db);
-					$relatedToEventHandler = new VTWorkflowEventHandler();
-					$relatedToEventHandler->workflows = $wfs->getWorkflowsForModuleSupportingComments($entityData->getModuleName());
+				$wsId = vtws_getWebserviceEntityId($entityData->getModuleName(), $entityData->getId());
+				$fromPortal = $entityData->get('from_portal');
 
-					$wsId = vtws_getWebserviceEntityId($entityData->getModuleName(), $entityData->getId());
-					$fromPortal = $entityData->get('from_portal');
+				$util = new VTWorkflowUtils();
+				$entityCache = new VTEntityCache($util->adminUser());
 
-					$util = new VTWorkflowUtils();
-					$entityCache = new VTEntityCache($util->adminUser());
+				$entityCacheData = $entityCache->forId($wsId);
+				$entityCacheData->set('from_portal', $fromPortal);
+				$entityCache->cache[$wsId] = $entityCacheData;
 
-					$entityCacheData = $entityCache->forId($wsId);
-					$entityCacheData->set('from_portal', $fromPortal);
-					$entityCache->cache[$wsId] = $entityCacheData;
-					$relatedToEventHandler->handleEvent($eventName, $entityData, $entityCache,$relatedInfo);
-					$util->revertUser();
-				}
+				$relatedToEventHandler->handleEvent($eventName, $entityData, $entityCache);
+				$util->revertUser();
 			}
 		}
 	}

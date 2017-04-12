@@ -10,37 +10,17 @@
 
 class Calendar_Detail_View extends Vtiger_Detail_View {
 
-	function checkPermission(Vtiger_Request $request) {
-		$moduleName = $request->getModule();
-		$recordId = $request->get('record');
-
-		$recordPermission = Users_Privileges_Model::isPermitted($moduleName, 'DetailView', $recordId);
-		if(!$recordPermission) {
-			throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
-		}
-
-		if ($recordId) {
-			$activityModulesList = array('Calendar', 'Events');
-			$recordEntityName = getSalesEntityType($recordId);
-
-			if (!in_array($recordEntityName, $activityModulesList) || !in_array($moduleName, $activityModulesList)) {
-				throw new AppException(vtranslate('LBL_PERMISSION_DENIED'));
-			}
-		}
-		return true;
-	}
-
 	function preProcess(Vtiger_Request $request, $display=true) {
 		parent::preProcess($request, false);
 
 		$recordId = $request->get('record');
 		$moduleName = $request->getModule();
-		if(!empty($recordId)){
-			$recordModel = Vtiger_Record_Model::getInstanceById($recordId);
-			$activityType = $recordModel->getType();
-			if($activityType == 'Events')
-				$moduleName = 'Events';
-		}
+        if(!empty($recordId)){
+            $recordModel = Vtiger_Record_Model::getInstanceById($recordId);
+            $activityType = $recordModel->getType();
+            if($activityType == 'Events')
+                $moduleName = 'Events';
+        }
 		$detailViewModel = Vtiger_DetailView_Model::getInstance($moduleName, $recordId);
 		$recordModel = $detailViewModel->getRecord();
 		$recordStrucure = Vtiger_RecordStructure_Model::getInstanceFromRecordModel($recordModel, Vtiger_RecordStructure_Model::RECORD_STRUCTURE_MODE_DETAIL);
@@ -103,12 +83,12 @@ class Calendar_Detail_View extends Vtiger_Detail_View {
 		$viewer->assign('IS_EDITABLE', $detailViewModel->getRecord()->isEditable($moduleName));
 		$viewer->assign('IS_DELETABLE', $detailViewModel->getRecord()->isDeletable($moduleName));
 
-		$linkParams = array('MODULE'=>$moduleName, 'ACTION'=>$request->get('view'));
+        $linkParams = array('MODULE'=>$moduleName, 'ACTION'=>$request->get('view'));
 		$linkModels = $detailViewModel->getSideBarLinks($linkParams);
 
-		$viewer->assign('QUICK_LINKS', $linkModels);
+        $viewer->assign('QUICK_LINKS', $linkModels);
 		$viewer->assign('NO_SUMMARY', true);
-		$viewer->assign('MODULE_NAME', $moduleName);
+
 		if($display) {
 			$this->preProcessDisplay($request);
 		}
@@ -123,12 +103,12 @@ class Calendar_Detail_View extends Vtiger_Detail_View {
 		$recordId = $request->get('record');
 		$moduleName = $request->getModule();
 
-		if(!empty($recordId)){
-			$recordModel = Vtiger_Record_Model::getInstanceById($recordId);
-			$activityType = $recordModel->getType();
-			if($activityType == 'Events')
-				$moduleName = 'Events';
-		}
+        if(!empty($recordId)){
+            $recordModel = Vtiger_Record_Model::getInstanceById($recordId);
+            $activityType = $recordModel->getType();
+            if($activityType == 'Events')
+                $moduleName = 'Events';
+        }
 
 		$detailViewModel = Vtiger_DetailView_Model::getInstance($moduleName, $recordId);
 		$recordModel = $detailViewModel->getRecord();
@@ -136,19 +116,19 @@ class Calendar_Detail_View extends Vtiger_Detail_View {
 		$structuredValues = $recordStrucure->getStructure();
 		$moduleModel = $recordModel->getModule();
 
-		if ($moduleName == 'Events'){
-			$relatedContacts = $recordModel->getRelatedContactInfo();
-			foreach($relatedContacts as $index=>$contactInfo) {
-				$contactRecordModel = Vtiger_Record_Model::getCleanInstance('Contacts');
-				$contactRecordModel->setId($contactInfo['id']);
-				$contactInfo['_model'] = $contactRecordModel;
-				$relatedContacts[$index] = $contactInfo;
-			}
-		}else{
-			$relatedContacts = array();
-		}
+        if ($moduleName == 'Events'){
+            $relatedContacts = $recordModel->getRelatedContactInfo();
+            foreach($relatedContacts as $index=>$contactInfo) {
+                $contactRecordModel = Vtiger_Record_Model::getCleanInstance('Contacts');
+                $contactRecordModel->setId($contactInfo['id']);
+                $contactInfo['_model'] = $contactRecordModel;
+                $relatedContacts[$index] = $contactInfo;
+            }
+        }else{
+            $relatedContacts = array();
+        }
 
-
+		
 		$viewer = $this->getViewer($request);
 		$viewer->assign('RECORD', $recordModel);
 		$viewer->assign('RECORD_STRUCTURE', $structuredValues);
@@ -156,29 +136,18 @@ class Calendar_Detail_View extends Vtiger_Detail_View {
 		$viewer->assign('RECORD_STRUCTURE_MODEL', $recordStrucure);
 		$viewer->assign('USER_MODEL', Users_Record_Model::getCurrentUserModel());
 		$viewer->assign('MODULE_NAME', $moduleName);
-		$viewer->assign('RELATED_CONTACTS', $relatedContacts);
+        $viewer->assign('RELATED_CONTACTS', $relatedContacts);
 		$viewer->assign('IS_AJAX_ENABLED', $this->isAjaxEnabled($recordModel));
 		$viewer->assign('RECURRING_INFORMATION', $recordModel->getRecurringDetails());
 
-		$picklistDependencyDatasource = Vtiger_DependencyPicklist::getPicklistDependencyDatasource($moduleName);
-		$viewer->assign('PICKIST_DEPENDENCY_DATASOURCE', Vtiger_Functions::jsonEncode($picklistDependencyDatasource));
+        if($moduleName=='Events') {
+            $currentUser = Users_Record_Model::getCurrentUserModel();
+            $accessibleUsers = $currentUser->getAccessibleUsers();
+            $viewer->assign('ACCESSIBLE_USERS', $accessibleUsers);
+            $viewer->assign('INVITIES_SELECTED', $recordModel->getInvities());
+        }
 
-		if($moduleName=='Events') {
-			$currentUser = Users_Record_Model::getCurrentUserModel();
-			$accessibleUsers = $currentUser->getAccessibleUsers();
-			$viewer->assign('ACCESSIBLE_USERS', $accessibleUsers);
-			$viewer->assign('INVITIES_SELECTED', $recordModel->getInvities());
-			$viewer->assign('INVITEES_DETAILS', $recordModel->getInviteesDetails());
-		}
-
-		if ($request->get('displayMode') == 'overlay') {
-			$viewer->assign('MODULE_MODEL', $moduleModel);
-			$this->setModuleInfo($request, $moduleModel);
-			$viewer->assign('MODULE', $request->getModule());
-			return $viewer->view('OverlayDetailView.tpl', $moduleName);
-		} else {
-			return $viewer->view('DetailViewFullContents.tpl', $moduleName, true);
-		}
+		return $viewer->view('DetailViewFullContents.tpl',$moduleName,true);
 	}
 
 	/**
@@ -197,4 +166,5 @@ class Calendar_Detail_View extends Vtiger_Detail_View {
 	function isAjaxEnabled($recordModel) {
 		return false;
 	}
+
 }

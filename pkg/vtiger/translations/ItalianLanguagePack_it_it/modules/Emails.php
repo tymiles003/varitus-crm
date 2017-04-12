@@ -37,14 +37,4 @@ $languageStrings = array(
 	'Date & Time Sent'             => 'Date Sent'                   , // TODO: Review
     'Time Start'                   => 'misit'                       ,
     'LBL_EMAIL_INFORMATION' => 'E-mail Informazione',
-    'LBL_EMAILTEMPLATE_WARNING'    => 'Sono l unione-tag correggere',
-    'LBL_EMAILTEMPLATE_WARNING_CONTENT' => 'Si prega di assicurarsi che il modello selezionato dispone di unire-tag relativi al record destinatario. 
-                                             Se si invia una mail a piombo, ma l unione-tag appartieni Modulo di contatto (es: $contacts-lastname$), 
-                                             quindi non verranno uniti i valori.',
-	'Draft'                        => 'Bozza'                       , 
-    'Parent ID'                    => 'Parent Record',
 );
-
-$jsLanguageStrings = array(
-    'JS_WARNING' => 'avviso',
-); 

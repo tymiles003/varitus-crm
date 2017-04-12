@@ -28,11 +28,6 @@ class Leads_ConvertLead_View extends Vtiger_Index_View {
 		$moduleName = $request->getModule();
 
 		$recordModel = Vtiger_Record_Model::getInstanceById($recordId);
-        $imageDetails = $recordModel->getImageDetails();
-        if(count($imageDetails)) {
-            $imageAttachmentId = $imageDetails[0]['id'];
-            $viewer->assign('IMAGE_ATTACHMENT_ID', $imageAttachmentId);
-        }
 		$moduleModel = $recordModel->getModule();
 		
 		$viewer->assign('MODULE', $moduleName);

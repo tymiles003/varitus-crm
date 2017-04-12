@@ -34,12 +34,6 @@ class Vtiger_MassEditRecordStructure_Model extends Vtiger_EditRecordStructure_Mo
 				foreach($fieldModelList as $fieldName=>$fieldModel) {
 					if($fieldModel->isEditable() && $fieldModel->isMassEditable()) {
 						if($fieldModel->isViewable() && $this->isFieldRestricted($fieldModel)) {
-							if ($fieldModel->isMandatory()) {
-								$dataType = $fieldModel->get('typeofdata');
-								$explodeDataType = explode('~', $dataType);
-								$fieldModel->set('typeofdata', $explodeDataType[0] . '~O');
-							}
-
 							if($recordExists) {
 								$fieldModel->set('fieldvalue', $recordModel->get($fieldName));
 							}
@@ -59,7 +53,11 @@ class Vtiger_MassEditRecordStructure_Model extends Vtiger_EditRecordStructure_Mo
 	 *  @returns boolean true or false
 	 */
 	public function isFieldRestricted($fieldModel){
-		return true;
+		if($fieldModel->getFieldDataType() == 'image'){
+			return false;
+		} else {
+			return true;
+		}
 	}
 	 
 }

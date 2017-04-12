@@ -25,7 +25,4 @@ $languageStrings = array(
 	'Notes'                        => 'Notes'                       , 
 	'In Service'                   => 'In Service'                  , 
 	'Out-of-service'               => 'Out-of-service'              , 
-
-  'Assets' => 'Activele',
-
 );

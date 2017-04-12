@@ -8,19 +8,21 @@
  * All Rights Reserved.
  *************************************************************************************/
 $languageStrings = array(
-	'isactive' => 'Active',
-	'LBL_ADD_CONFIGURATION' => 'New Configuration',
 	'LBL_ADD_RECORD' => 'New Configuration',
+	'SMSNotifier' => 'SMS Provider Configuration',
+	'LBL_ADD_CONFIGURATION' => 'New Configuration',
 	'LBL_EDIT_CONFIGURATION' => 'Edit Configuration',
 	'LBL_SELECT_ONE' => 'Select One',
-	'password' => 'Password',
+	
+	//Fields
 	'providertype' => 'Provider',
-	'SMSNotifier' => 'SMS Provider Configuration',
+	'isactive' => 'Active',
 	'username' => 'User Name',
+	'password' => 'Password',
 );
 
 $jsLanguageStrings = array(
-	'JS_CONFIGURATION_SAVED' => 'SMS Provider Configurations saved',
+	'LBL_DELETE_CONFIRMATION' => 'Are you sure, you want to delete this SMSNotifier Configuration',
 	'JS_RECORD_DELETED_SUCCESSFULLY' => 'SMS Provider Deleted Successfully',
-	'LBL_DELETE_CONFIRMATION' => 'Are you sure, you want to delete this SMSNotifier Configuration?',
+	'JS_CONFIGURATION_SAVED' => 'SMS Provider Configurations saved',
 );	

@@ -15,7 +15,7 @@ class Vtiger_Cache_Connector {
 
 	protected function __construct() {
 		if (!$this->connection) {
-			$this->connection = Vtiger_Cache_Connector_Memory::getInstance();
+			$this->connection = new Vtiger_Cache_Connector_Memory();
 		}
 	}
 
@@ -32,24 +32,20 @@ class Vtiger_Cache_Connector {
 		return $this->connection->get($this->cacheKey($namespace, $key));
 	}
 
-	public function delete($namespace, $key) {
-		$this->connection->delete($this->cacheKey($namespace, $key));
-	}
-
 	public function has($namespace, $key) {
 		return $this->get($namespace, $key) !== false;
 	}
+    
+    public function flush(){
+        $this->connection->flush(); 
 
-	public function flush(){
-		$this->connection->flush(); 
+        $time = time()+1; //one second future 
+        while(time() < $time) { 
+            //sleep 
+        } 
+    }
 
-		$time = time()+1; //one second future 
-		while(time() < $time) { 
-			//sleep 
-		} 
-	}
-
-	public static function getInstance() {
+    public static function getInstance() {
 		static $singleton = NULL;
 		if ($singleton === NULL) {
 			$singleton = new self();

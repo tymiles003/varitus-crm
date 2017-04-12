@@ -27,9 +27,6 @@ $languageStrings = array(
 	'SINGLE_Groups'                => 'Group'                       , 
 	'SINGLE_Roles'                 => 'Role'                        , 
 	'SINGLE_RoleAndSubordinates'   => 'RoleAndSubordinate'          , 
-
-  'SharingAccess' => 'Die Gemeinsame Nutzung Von Regeln',
-
 );
 $jsLanguageStrings = array(
 	'JS_CUSTOM_RULE_SAVED_SUCCESSFULLY' => 'Custom Sharing Rule Saved Successfully', 

@@ -244,7 +244,7 @@ class MailManager_Upload_Action extends qqFileUploader {
 	 * @return Array
 	 */
 	public function handleUpload($uploadDirectory, $replaceOldFile = FALSE) {
-		if(!isPermitted('Documents', 'CreateView')) {
+		if(!isPermitted('Documents', 'EditView')) {
 			return array('error' => "Permission not available");
 		}
 

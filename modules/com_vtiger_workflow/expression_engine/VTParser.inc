@@ -58,6 +58,7 @@ class VTExpressionParser{
 	function consume($label, $value){
 		$token=$this->nextToken();
 		if($token->label!=$label || $token->value!=$value){
+			echo "Was expecting a $label of value $value got a {$token->label} of {$token->value} instead.";
 			throw new Exception("Was expecting a $label of value $value got a {$token->label} of {$token->value} instead.");
 		}
 	}
@@ -94,6 +95,7 @@ class VTExpressionParser{
 				}
 				return $val;
 			default:
+				print_r($token);
 				throw new Exception();
 		}
 	}

@@ -33,7 +33,4 @@ $languageStrings = array(
 	/*picklist values*/
 	'In Service'=>'W serwisie',
 	'Out-of-service'=>'Serwis zakończony',
-
-  'Assets' => 'Aktywa',
-
 );
